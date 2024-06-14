@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Post.associate = function(models) {
-        Post.belongsTo(models.users, { // Adjust based on the actual table name in your database
+        Post.belongsTo(models.User, { // Adjust based on the actual model name in your database
             foreignKey: 'userId',
             as: 'user'
         });
@@ -47,3 +47,4 @@ module.exports = (sequelize, DataTypes) => {
 
     return Post;
 };
+
