@@ -36,11 +36,14 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Comment.associate = (models) => {
-        Comment.belongsTo(models.users, { // Adjust based on the actual table name in your database
+        // Correct association with User model
+        Comment.belongsTo(models.User, {
             foreignKey: 'userId',
             as: 'user'
         });
-        Comment.belongsTo(models.posts, { // Adjust based on the actual table name in your database
+
+        // Correct association with Post model
+        Comment.belongsTo(models.Post, {
             foreignKey: 'postId',
             as: 'post'
         });
