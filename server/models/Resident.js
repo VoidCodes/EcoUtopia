@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             foreignKey: true
         },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         name: {
             type: DataTypes.STRING(100),
             allowNull: false
@@ -23,16 +27,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false,
-        //     references: {
-        //         model: 'users',
-        //         key: 'userid'
-        //     },
-        //     onUpdate: 'CASCADE',
-        //     onDelete: 'CASCADE'
-        // }
     }, {
         tableName: 'resident'
     });
@@ -44,6 +38,18 @@ module.exports = (sequelize, DataTypes) => {
     Resident.associate = (models) => {
         Resident.hasMany(models.Orders, { foreignKey: 'resident_id' });
     };
+
+    Resident.associate = (models) => {
+        Resident.hasMany(models.Post, { foreignKey: 'resident_id' });
+    };
+
+    Resident.associate = (models) => {
+        Resident.hasMany(models.Reports, { foreignKey: 'resident_id' });
+    };
+
+    Resident.associate = (models) => {
+        Resident.hasMany(models.Rewards, { foreignKey: 'resident_id' });
+    }
 
     return Resident;
 }

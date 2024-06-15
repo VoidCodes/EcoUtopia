@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         name: {
             type: DataTypes.STRING(100),
             allowNull: false
@@ -22,16 +26,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false,
-        //     references: {
-        //         model: 'users',
-        //         key: 'userid'
-        //     },
-        //     onUpdate: 'CASCADE',
-        //     onDelete: 'CASCADE'
-        // }
     }, {
         tableName: 'staff'
     });
