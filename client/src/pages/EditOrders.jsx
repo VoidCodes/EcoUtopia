@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import http from '../http';
 import dayjs from 'dayjs';
 import global from '../global';
+import { Link } from 'react-router-dom';
 
 function EditOrders() {
   const { orderId } = useParams();
@@ -15,6 +16,12 @@ function EditOrders() {
       });
     }
   }, [orderId]);
+
+  const handleRefund = () => {
+    http.put(`/orders/${orderId}`).then((res) => {
+      setOrder(res.data);
+    });
+  };
 
   if (!order) {
     return <div>Loading...</div>;
@@ -33,7 +40,24 @@ function EditOrders() {
         <p>
           <strong>Order Date:</strong> {dayjs(order.order_date).format(global.datetimeFormat)}
         </p>
-        {/* Add more fields as necessary */}
+        <p>
+          <strong>Instructor:</strong> {order.Course.course_instructor}
+        </p>
+        <p>
+          <strong>Course Description</strong> {order.Course.course_description}
+        </p>
+        <p>
+          <strong>Course Date:</strong> {dayjs(order.Course.course_date).format(global.datetimeFormat)}
+        </p>
+        <p>
+          <strong>Start Time:</strong> {order.Course.course_start_time}
+        </p>
+        <p>
+          <strong>End Time:</strong> {order.Course.course_end_time}
+        </p>
+        <Link to="/orders">
+        <button onClick={handleRefund}>Refund Order</button>
+        </Link>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { FaRegUser, FaSearch } from "react-icons/fa";
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Orders from './pages/Orders';
 import EditOrders from './pages/EditOrders';
+import AdminOrders from './pages/AdminOrders';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" />
         <Route path="/orders" element={<Orders />} />
         <Route path={"/editorders/:orderId"} element={<EditOrders/>} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
       </Routes>
     </Router>
   );
