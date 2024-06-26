@@ -9,14 +9,15 @@ import App from './pages/App.jsx'
 import TestPage from './pages/TestPage.jsx';
 import Courses from './pages/Courses.jsx';
 import ViewCourse from './pages/ViewCourse.jsx';
+import ViewRewards from './pages/Rewards.jsx';
 import Login from './pages/Login.jsx'
-import Navbar from './components/Navbar.jsx';
 import Registration from './pages/Registration';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Orders from './pages/Orders';
-import EditOrders from './pages/EditOrders';
-import AdminOrders from './pages/AdminOrders';
+import EditOrders from './pages/admin/EditOrders';
+import AdminOrders from './pages/admin/AdminOrders';
+import CreateCourse from './pages/admin/CreateCourse.jsx';
 
 import {
   BrowserRouter,
@@ -24,7 +25,8 @@ import {
   Route,
 } from 'react-router-dom'
 import '@mantine/core/styles.css';
-import { Box, MantineProvider, createTheme, rem } from '@mantine/core'
+import '@mantine/dates/styles.css';
+import { MantineProvider, createTheme, rem } from '@mantine/core'
 
 const theme = createTheme({
   //primaryColor: 'violet'
@@ -60,12 +62,12 @@ const theme = createTheme({
 function Main() {
   return (
     <>
-      <Navbar />
-      <Box padding="xl" style={{marginTop: '70px'}} />
+      {/*<Box padding="xl" style={{marginTop: '70px'}} /> */}
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId" element={<ViewCourse />} />
+        <Route path="/rewards" element={<ViewRewards />} />
         <Route path="/login" element={<Login />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/register" element={<Registration />} />
@@ -75,6 +77,7 @@ function Main() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/create-course" element={<CreateCourse />} />
       </Routes>
     </>
   )

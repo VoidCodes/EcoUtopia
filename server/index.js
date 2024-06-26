@@ -23,13 +23,14 @@ app.get("/", (req, res) => {
 app.use('/uploads', express.static('uploads'));
 
 // Routes
-
 const courseRoute = require('./routes/course');
 const userRoute = require('./routes/user');
+const rewardsRoute = require('./routes/rewards');
 const ordersRoute = require('./routes/orders');
 
 app.use("/courses", courseRoute);
 app.use('/user', userRoute);
+app.use('/rewards', rewardsRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use("/orders", ordersRoute);
 

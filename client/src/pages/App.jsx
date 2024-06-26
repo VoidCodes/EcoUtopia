@@ -1,11 +1,14 @@
 import { useDisclosure } from '@mantine/hooks';
-import { Button, Container, Group, Anchor, Modal, Text } from "@mantine/core"
+import Navbar from '../components/Navbar';
+import { Button, Container, Group, Anchor, Modal, Text, Box } from "@mantine/core"
 
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
     <Container size={"xl"}>
+      <Box padding="xl" style={{marginTop: '70px'}} />
+      <Navbar />
       <Modal opened={opened} onClose={close} title="Welcome to EcoUtopia">
         <p>This is a modal window. You can use it to display some important information to the user.</p>
         <Group>

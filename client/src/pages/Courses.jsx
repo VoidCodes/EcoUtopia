@@ -1,6 +1,7 @@
 import axios from "axios";
 import dayjs from "dayjs";
-
+import Navbar from "../components/Navbar.jsx";
+import { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -15,9 +16,6 @@ import {
   Box,
   LoadingOverlay,
 } from "@mantine/core";
-import Navbar from "../components/Navbar.jsx";
-
-import { useState, useEffect } from "react";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
