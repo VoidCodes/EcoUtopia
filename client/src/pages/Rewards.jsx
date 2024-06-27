@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Card, Image, Text, Button, Group, SimpleGrid } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function Rewards() {
@@ -17,18 +18,20 @@ function Rewards() {
       <h1>Rewards</h1>
       <SimpleGrid cols={3} spacing="lg">
         {rewards.map((reward) => (
-          <Card key={reward.reward_id} shadow="sm" padding="lg" style={{ maxWidth: 200 }}>
-            <Card.Section>
-              <Image src={reward.reward_image} alt={reward.reward_name} height={160} />
-            </Card.Section>
-            <Group direction="column" spacing="sm" align="center">
-              <Text weight={500} size="lg" style={{ marginTop: 10 }}>
-                {reward.reward_name}
-              </Text>
-              <Text size="sm">{reward.reward_points} Points</Text>
-              <Button color="green">Redeem</Button>
-            </Group>
-          </Card>
+          <Link to={`/reward/${reward.reward_id}`} key={reward.reward_id} style={{ textDecoration: 'none' }}>
+            <Card shadow="sm" padding="lg" style={{ maxWidth: 200 }}>
+              <Card.Section>
+                <Image src={reward.reward_image} alt={reward.reward_name} height={160} />
+              </Card.Section>
+              <Group direction="column" spacing="sm" align="center">
+                <Text weight={500} size="lg" style={{ marginTop: 10 }}>
+                  {reward.reward_name}
+                </Text>
+                <Text size="sm">{reward.reward_points} Points</Text>
+                <Button color="green">Redeem</Button>
+              </Group>
+            </Card>
+          </Link>
         ))}
       </SimpleGrid>
     </Container>
@@ -36,3 +39,4 @@ function Rewards() {
 }
 
 export default Rewards;
+
