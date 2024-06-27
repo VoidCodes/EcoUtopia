@@ -17,7 +17,9 @@ import EditProfile from './pages/EditProfile';
 import Orders from './pages/Orders';
 import EditOrders from './pages/admin/EditOrders';
 import AdminOrders from './pages/admin/AdminOrders';
+import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
+import EditCourse from './pages/admin/EditCourse.jsx';
 
 import {
   BrowserRouter,
@@ -77,7 +79,9 @@ function Main() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/admin/create-course" element={<CreateCourse />} />
+        <Route path="/admin/edit-course/:courseId" element={<EditCourse />} />
       </Routes>
     </>
   )

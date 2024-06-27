@@ -1,9 +1,20 @@
 import { useDisclosure } from '@mantine/hooks';
+import { TimeInput } from '@mantine/dates';
+import { IconClock } from '@tabler/icons-react';
 import Navbar from '../components/Navbar';
-import { Button, Container, Group, Anchor, Modal, Text, Box } from "@mantine/core"
+import { Button, Container, Group, Anchor, Modal, Text, Box, ActionIcon, rem } from "@mantine/core"
+import { useRef } from 'react';
 
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
+
+  const ref = useRef(null);
+
+    const pickerControl = (
+        <ActionIcon variant="subtle" color="gray" onClick={() => ref.current?.showPicker()}>
+        <IconClock style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+        </ActionIcon>
+    );
 
   return (
     <Container size={"xl"}>
@@ -25,7 +36,11 @@ function App() {
           <Button color='red'>Click me</Button>
         </Anchor>
         <Button onClick={open} color='green'>Click me</Button>
+        <Anchor href="/admin/view-courses">
+          <Button color='orange'>Click me</Button>
+        </Anchor>
       </Group>
+      <TimeInput withSeconds label="Click icon to show browser picker" ref={ref} rightSection={pickerControl} />
     </Container>
   )
 }

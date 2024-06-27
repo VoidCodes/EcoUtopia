@@ -14,7 +14,9 @@ import {
   Button,
   Group,
   Box,
+  Avatar,
   LoadingOverlay,
+  Flex,
 } from "@mantine/core";
 
 function Courses() {
@@ -86,13 +88,20 @@ function Courses() {
             <Text align="center" fw={700} style={{ margin: 10 }}>
               {course.course_name}
             </Text>
-            <Text align="center" style={{ margin: 10 }}>
-              {course.course_description}
-            </Text>
-            <Group grow justify="center">
+            <Flex justify="flex-start" align="center">
+              <Box style={{ margin: 10 }}>
+                <Flex justify="flex-start" align="center">
+                  <Avatar radius="xl" size="md" alt="aa" />
+                  <Text align="center" style={{ margin: 10 }}>
+                    {course.course_instructor}
+                  </Text>
+                </Flex>
+              </Box>
+            </Flex>
+            <Group justify="center">
               <Text weight={700}>Price : ${course.course_price}</Text>
               <Anchor style={{ textDecoration: 'none' }} href={`/course/${course.course_id}`}>
-                <Button fullWidth color="deepBlue" style={{ margin: 10 }}>
+                <Button variant="filled" color="deepBlue" style={{ margin: 10 }}>
                   View Course
                 </Button>
               </Anchor>

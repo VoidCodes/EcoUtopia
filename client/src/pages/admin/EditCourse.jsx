@@ -1,8 +1,9 @@
-import axios from 'axios';
+import axios from 'axios'
 import { 
     Container,
     Text,
     Button,
+    LoadingOverlay,
     Title,
     Box,
     ActionIcon,
@@ -14,18 +15,21 @@ import {
     Notification,
     Select,
     Group,
-} from '@mantine/core'
-import { DateTimePicker, TimeInput } from '@mantine/dates';
+} from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
-import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
-//import AdminNav from '../../components/AdminNav'
+import { DateTimePicker, TimeInput } from '@mantine/dates';
 
-function CreateCourse() {
-    const navigate = useNavigate();
+import { useState, useEffect, useRef } from "react"
+import { useParams, useNavigate } from 'react-router-dom';
+
+function EditCourse() {
+    const { courseId } = useParams()
+    const navigate = useNavigate()
+    const [course, setCourse] = useState(null)
     const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
     const [formErrors, setFormErrors] = useState({});
     const [formData, setFormData] = useState({
         course_name: '',
@@ -33,11 +37,11 @@ function CreateCourse() {
         course_price: '',
         course_instructor: '',
         course_type: '',
-        course_date: new Date(),
+        course_date: '',
         course_start_time: '',
         course_end_time: '',
         course_capacity: ''
-    });
+      });
 
     const ref = useRef(null);
 
@@ -59,33 +63,33 @@ function CreateCourse() {
         if (!formData.course_end_time) errors.course_end_time = "Course end time is required";
         return errors;
     };
-
     const handleSubmit = async () => {
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             return;
         }
+
         try {
+            //console.log(values);
             const formattedData = {
                 ...formData,
                 course_date: new Date(formData.course_date).toISOString(),
                 course_start_time: formData.course_start_time,
-                course_end_time: formData.course_end_time
+                course_end_time: formData.course_end_time,
             };
             console.log(`Formatted data: ${JSON.stringify(formattedData)}`);
-            const response = await axios.post('http://localhost:3001/courses/createCourse', formattedData);
-            console.log(`Response: ${JSON.stringify(response.data)}`);
+            const response = await axios.put(`http://localhost:3001/courses/updateCourse/${courseId}`, formattedData);
             console.log(response.data);
             setSuccess(true);
-            setError(false);
+            setError(false)
             setFormErrors({});
             setTimeout(() => {
                 navigate('/admin/view-courses')
             }, 2000);
         } catch (error) {
-            console.error('Error:', error);
-            setError(true);
+            console.error('Error:', JSON.stringify(error));
+            setError(true)
             if (error.response) {
                 const responseErrors = error.response.data.errors || {};
                 setFormErrors(responseErrors);
@@ -96,11 +100,44 @@ function CreateCourse() {
                 setErrorMessage(`Error: ${error.message}`);
             }
         }
-    };
+    }
 
     useEffect(() => {
-        document.title = 'Create Course - EcoUtopia';
-    }, []);
+        document.title = 'Course Details - EcoUtopia'
+        const fetchCourse = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3000/api/courses/getCourse/${courseId}`)
+                const fetchedCourse = response.data
+                setCourse(fetchedCourse)
+                setFormData({
+                    course_name: fetchedCourse.course_name,
+                    course_description: fetchedCourse.course_description,
+                    course_price: fetchedCourse.course_price,
+                    course_instructor: fetchedCourse.course_instructor,
+                    course_type: fetchedCourse.course_type,
+                    course_date: fetchedCourse.course_date,
+                    course_start_time: fetchedCourse.course_start_time,
+                    course_end_time: fetchedCourse.course_end_time,
+                    course_capacity: fetchedCourse.course_capacity
+                })
+                setLoading(false)
+            } catch (error) {
+                setError(error)
+                setErrorMessage(error.message)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchCourse()
+    }, [courseId])
+
+    if (loading) {
+        return (
+            <Container size="xl">
+                <LoadingOverlay visible />
+            </Container>
+        )
+    }
 
     if (error) {
         return (
@@ -113,39 +150,46 @@ function CreateCourse() {
     }
 
     return (
-        <>
-        {/*<AdminNav /> */}
         <Container size="xl">
-            <Box mt="lg" p="lg" style={{maxWidth: "800px", margin: "auto"}}>
-                <Title order={1}>Create Course</Title>
-                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(formData); }}>
+            <Box style={{ marginTop: 40 }} />
+            <Title order={1} style={{ marginBottom: 20 }}>Edit Course</Title>
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(formData); }}>
+                <Box>
                     <TextInput
                         label="Course Name"
                         placeholder="Enter course name"
-                        required
                         value={formData.course_name}
+                        style={{ marginBottom: rem(1) }}
                         onChange={(event) => setFormData({ ...formData, course_name: event.target.value })}
+                        required
+                        error={formErrors.course_name}
                     />
                     <Textarea
                         label="Course Description"
                         placeholder="Enter course description"
-                        required
                         value={formData.course_description}
+                        style={{ marginBottom: rem(1) }}
                         onChange={(event) => setFormData({ ...formData, course_description: event.target.value })}
+                        required
+                        error={formErrors.course_description}
                     />
                     <TextInput
                         label="Course Instructor"
                         placeholder="Enter course instructor"
-                        required
                         value={formData.course_instructor}
+                        style={{ marginBottom: rem(1) }}
                         onChange={(event) => setFormData({ ...formData, course_instructor: event.target.value })}
+                        required
+                        error={formErrors.course_instructor}
                     />
                     <NumberInput
                         label="Course Price"
                         placeholder="Enter course price"
-                        required
                         value={formData.course_price}
+                        style={{ marginBottom: rem(1) }}
                         onChange={(value) => setFormData({ ...formData, course_price: value })}
+                        required
+                        error={formErrors.course_price}
                     />
                     <Select
                         label="Course Type"
@@ -160,35 +204,17 @@ function CreateCourse() {
                         required
                         error={formErrors.course_type}
                     />
-                    <DateTimePicker
-                        label="Course Date"
-                        placeholder="Enter course date"
+                    <DateTimePicker 
+                        label="Pick date and time" 
+                        placeholder="Pick date and time" 
                         valueFormat='YYYY-MM-DD HH:mm:ss'
                         value={new Date(formData.course_date)}
-                        onChange={(date) => setFormData({ ...formData, course_date: date })}
+                        onChange={(date) => setFormData({ ...formData, course_date: date.toISOString() })}
                         style={{ marginBottom: rem(1) }}
                         required
                         error={formErrors.course_date}
                     />
-                    <TextInput
-                        label="Start Time"
-                        placeholder="Enter start time"
-                        value={formData.course_start_time}
-                        style={{ marginBottom: rem(1) }}
-                        onChange={(event) => setFormData({ ...formData, course_start_time: event.target.value })}
-                        required
-                        error={formErrors.course_start_time}
-                    />
-                    <TextInput
-                        label="End Time"
-                        placeholder="Enter end time"
-                        value={formData.course_end_time}
-                        style={{ marginBottom: rem(1) }}
-                        onChange={(event) => setFormData({ ...formData, course_end_time: event.target.value })}
-                        required
-                        error={formErrors.course_end_time}
-                    />
-                    {/*<TimeInput
+                    <TimeInput
                         label="Start Time"
                         placeholder="Enter start time"
                         rightSection={pickerControl}
@@ -197,10 +223,9 @@ function CreateCourse() {
                         style={{ marginBottom: rem(1) }}
                         onChange={(time) => setFormData({ ...formData, course_start_time: time })}
                         required
-                        withSeconds
                         error={formErrors.course_start_time}
-                    />*/}
-                    {/*<TimeInput
+                    />
+                    <TimeInput
                         label="End Time"
                         placeholder="Enter end time"
                         rightSection={pickerControl}
@@ -209,9 +234,8 @@ function CreateCourse() {
                         style={{ marginBottom: rem(1) }}
                         onChange={(time) => setFormData({ ...formData, course_end_time: time })}
                         required
-                        withSeconds
                         error={formErrors.course_end_time}
-                    />*/}
+                    />
                     <NumberInput
                         label="Capacity"
                         placeholder="Enter capacity"
@@ -221,37 +245,40 @@ function CreateCourse() {
                         required
                         error={formErrors.course_capacity}
                     />
-                    <Box mt="lg" />
+                    <Box style={{ marginTop: 20 }} />
                     <Group position="right" style={{ marginTop: 20 }}>
-                        <Button 
-                        type="submit" 
-                        variant="filled" 
-                        color="blue"
-                        onClick={() => {
-                            handleSubmit(formData)
-                            console.log(formData)
-                        }}
-                        >Create Course
+                        <Button
+                            color="teal"
+                            variant="dark"
+                            style={{ marginBottom: rem(1) }}
+                            onClick={() => {
+                                handleSubmit(formData)
+                                console.log(formData)
+                            }}
+                            type='submit'
+                        >
+                            Update Course
                         </Button>
-                        <Anchor href="/admin/view-courses">
-                            <Button variant="transparent" color="gray" style={{marginLeft: "10px"}}>Cancel</Button>
+                        <Anchor href="/admin/view-courses" style={{ marginLeft: rem(1) }}>
+                            <Button variant="transparent" color="gray">
+                                Cancel
+                            </Button>
                         </Anchor>
                     </Group>
-                    {success && (
-                        <Notification onClose={() => setSuccess(false)} color="green">
-                            Course created successfully
-                        </Notification>
-                    )}
-                    {error && (
-                        <Notification onClose={() => setError(false)} color="red">
-                            {errorMessage}
-                        </Notification>
-                    )}
-                </form>
-            </Box>
+                </Box>
+            </form>
+            {success && (
+                <Notification onClose={() => setSuccess(false)} color="green">
+                    Course updated successfully!
+                </Notification>
+            )}
+            {error && (
+                <Notification onClose={() => setError(false)} color="red">
+                    {errorMessage}
+                </Notification>
+            )}
         </Container>
-        </>
     )
 }
 
-export default CreateCourse
+export default EditCourse
