@@ -8,7 +8,10 @@ router.post("/createCourse", async (req, res) => {
     course_name: yup.string().required("Course name is required"),
     course_description: yup.string().required("Course description is required"),
     course_instructor: yup.string().required("Instructor name is required"),
-    course_price: yup.number().required("Price is required"),
+    course_price: yup.number()
+    .required("Price is required")
+    .min(0, "Price cannot be negative")
+    .typeError("Price must be a number"),
     course_type: yup
       .string()
       .required("Course type is required")
@@ -113,7 +116,10 @@ router.put("/updateCourse/:id", async (req, res) => {
     course_name: yup.string().required("Course name is required"),
     course_description: yup.string().required("Course description is required"),
     course_instructor: yup.string().required("Instructor name is required"),
-    course_price: yup.number().required("Price is required"),
+    course_price: yup.number()
+    .required("Price is required")
+    .min(0, "Price cannot be negative")
+    .typeError("Price must be a number"),
     course_type: yup
       .string()
       .required("Course type is required")
