@@ -80,9 +80,10 @@ function CreateCourse() {
             setSuccess(true);
             setError(false);
             setFormErrors({});
-            setTimeout(() => {
+            navigate('/admin/view-courses')
+            /*setTimeout(() => {
                 navigate('/admin/view-courses')
-            }, 2000);
+            }, 2000);*/
         } catch (error) {
             console.error('Error:', error);
             setError(true);
