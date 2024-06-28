@@ -20,6 +20,9 @@ import AdminOrders from './pages/admin/AdminOrders';
 import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
 import EditCourse from './pages/admin/EditCourse.jsx';
+import AdminRewards from './pages/admin/AdminRewards.jsx';
+import EditReward from './pages/admin/EditReward.jsx';
+import CreateReward from './pages/admin/CreateReward.jsx';
 
 import {
   BrowserRouter,
@@ -82,6 +85,9 @@ function Main() {
         <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/admin/create-course" element={<CreateCourse />} />
         <Route path="/admin/edit-course/:courseId" element={<EditCourse />} />
+        <Route path="/admin/rewards" element={<AdminRewards />} />
+        <Route path="/admin/edit-reward/:rewardId" element={<EditReward />} />
+        <Route path="/admin/create-reward" element={<CreateReward />} />
       </Routes>
     </>
   )

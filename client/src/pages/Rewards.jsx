@@ -1,19 +1,18 @@
 import axios from "axios";
-import dayjs from "dayjs";
 import Navbar from "../components/Navbar.jsx";
+import { useDisclosure } from '@mantine/hooks';
 import { 
   Container,
   Grid,
   Paper,
-  Anchor,
   Card,
   Image,
   Text,
-  Badge,
   Button,
   Group,
   Box,
   LoadingOverlay,
+  Modal,
  } from "@mantine/core";
 import { useState, useEffect } from "react";
 
@@ -21,6 +20,7 @@ function ViewRewards() {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [opened, { open, close }] = useDisclosure(false);
   
   useEffect(() => {
     const fetchRewards = async () => {
@@ -47,6 +47,23 @@ function ViewRewards() {
     <Container size="xl" style={{ marginTop: 20 }}>
       <Box padding="xl" style={{marginTop: '70px'}} />
       <Navbar />
+      <Modal
+        title="Redeem Reward"
+        opened={opened}
+        onClose={close}
+        style={{ width: 400 }}
+      >
+        <Text>Are you sure you want to redeem this reward?</Text>
+        <Box style={{ height: 20 }} />
+        <Group style={{ justifyContent: "flex-start" }}>
+          <Button onClick={close} style={{ marginRight: 10 }}>
+            Cancel
+          </Button>
+          <Button color="red" onClick={close}>
+            Redeem
+          </Button>
+        </Group>
+      </Modal>
       <Text
         align="start"
         weight={700}
@@ -58,9 +75,9 @@ function ViewRewards() {
         Check out our cool rewards!
       </Text>
       <Grid>
-        {rewards.map((course) => (
+        {rewards.map((reward) => (
           <Card
-            key={course.course_id}
+            key={reward.reward_id}
             shadow="xs"
             style={{ width: 300, margin: 10 }}
           >
@@ -71,26 +88,24 @@ function ViewRewards() {
                 alt="aa"
                 h={200}
               />
-              <Badge
-                color={course.course_type === "Online" ? "blue" : "orange"}
-                style={{ position: "absolute", bottom: 10, right: 10}}
-              >
-                {course.course_type}
-              </Badge>
             </Paper>
             <Text align="center" fw={700} style={{ margin: 10 }}>
-              {course.course_name}
+              {reward.reward_name}
             </Text>
             <Text align="center" style={{ margin: 10 }}>
-              {course.course_description}
+              {reward.reward_description}
             </Text>
             <Group grow justify="center">
-              <Text weight={700}>Price : ${course.course_price}</Text>
-              <Anchor style={{ textDecoration: 'none' }} href={`/course/${course.course_id}`}>
-                <Button fullWidth color="deepBlue" style={{ margin: 10 }}>
-                  View Course
-                </Button>
-              </Anchor>
+              <Text weight={700}>Points: {reward.reward_points}</Text>
+              <Button
+                color="deepBlue"
+                variant="filled"
+                size="sm"
+                onClick={open}
+                style={{ margin: 10 }}
+              >
+                Redeem
+              </Button>
             </Group>
           </Card>
         ))}
