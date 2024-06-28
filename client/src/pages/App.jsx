@@ -39,6 +39,9 @@ function App() {
         <Anchor href="/admin/view-courses">
           <Button color='orange'>Click me</Button>
         </Anchor>
+        <Anchor href="/admin/rewards">
+          <Button color='teal'>Click me</Button>
+        </Anchor>
       </Group>
       <TimeInput withSeconds label="Click icon to show browser picker" ref={ref} rightSection={pickerControl} />
     </Container>
