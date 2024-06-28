@@ -96,8 +96,10 @@ function EditCourse() {
                 setErrorMessage(JSON.stringify(error.response.data));
             } else if (error.request) {
                 setErrorMessage('Error: No response received from the server.');
+                setError(true)
             } else {
                 setErrorMessage(`Error: ${error.message}`);
+                setError(true)
             }
         }
     }
