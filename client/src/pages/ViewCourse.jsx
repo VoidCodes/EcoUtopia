@@ -9,7 +9,7 @@ import {
   Grid,
   Image,
   Title,
-  Box,
+  Box
 } from '@mantine/core';
 import Navbar from "../components/Navbar.jsx";
 
@@ -57,6 +57,7 @@ function ViewCourse() {
     }
 
   return (
+    
     <Container size="xl">
       <Box padding="xl" style={{marginTop: '70px'}} /> 
       <Navbar />

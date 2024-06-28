@@ -32,6 +32,7 @@ function AdminCourses() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [courseToDelete, setCourseToDelete] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
       const fetchCourses = async () => {
@@ -65,9 +66,13 @@ function AdminCourses() {
 
     if (loading) return <LoadingOverlay visible />;
     if (error) return <Text align="center">Error: {error.message}</Text>;
-    if (courses.length === 0) return <Text align="center">No courses found</Text>;
+    if (courses.length === 0) return <Text align="center">No courses found</Text>
 
-    const rows = courses.map((course) => (
+    const filteredCourses = courses.filter((course) =>
+      course.course_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const rows = filteredCourses.map((course) => (
         <Table.Tr key={course.course_id}>
           <Table.Td>
             <Group gap="sm">
@@ -137,10 +142,14 @@ function AdminCourses() {
         <Flex justify='space-between'>
             <Box>
                 <Flex gap="md">
-                    <TextInput placeholder="Search courses" />
+                    <TextInput 
+                    placeholder="Search courses" 
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                    />
                     {/*<Button color="blue">Search</Button>
                     <Button color="gray">Filter</Button>*/}
-                    <Text c="dimmed">{courses.length} courses found</Text>
+                    <Text c="dimmed">{filteredCourses.length} courses found</Text>
                 </Flex>
             </Box>
             <Anchor href="/admin/create-course">
