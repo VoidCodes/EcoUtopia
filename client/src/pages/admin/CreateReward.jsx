@@ -6,5 +6,5 @@ function CreateReward() {
   )
 }
 
-// Hello
+// Hello test
 export default CreateReward
