@@ -11,10 +11,38 @@ function AdminRewards() {
     const [rewardDescription, setRewardDescription] = useState('');
     const [rewardPoints, setRewardPoints] = useState(0);
     const [rewardExpiryDate, setRewardExpiryDate] = useState(new Date());
-    const [notification, setNotification] = useState({message: '', color: ''});
+    const [notification, setNotification] = useState({ message: '', color: '' });
+
+    const [errors, setErrors] = useState({ rewardName: '', rewardPoints: '', rewardExpiryDate: '' });
+
+    const validateInputs = () => {
+        let valid = true;
+        let errors = { rewardName: '', rewardPoints: '', rewardExpiryDate: '' };
+
+        if (!rewardName) {
+            errors.rewardName = 'Reward name is required';
+            valid = false;
+        }
+        if (rewardPoints <= 0) {
+            errors.rewardPoints = 'Reward points must be greater than zero';
+            valid = false;
+        }
+        if (rewardExpiryDate < new Date()) {
+            errors.rewardExpiryDate = 'Expiry date cannot be in the past';
+            valid = false;
+        }
+
+        setErrors(errors);
+        return valid;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateInputs()) {
+            setNotification({ message: 'Please fix the errors in the form', color: 'red' });
+            return;
+        }
 
         try {
             await axios.post('/rewards/createReward', {
@@ -24,13 +52,13 @@ function AdminRewards() {
                 reward_expiry_date: rewardExpiryDate.toISOString()
             });
 
-            setNotification({message: 'Reward added successfully!', color: 'green'});
+            setNotification({ message: 'Reward added successfully!', color: 'green' });
             setRewardName('');
             setRewardDescription('');
             setRewardPoints(0);
             setRewardExpiryDate(new Date());
         } catch (error) {
-            setNotification({message: error.response.data.message, color: 'red'});
+            setNotification({ message: error.response.data.message, color: 'red' });
         }
     };
 
@@ -44,6 +72,7 @@ function AdminRewards() {
                         value={rewardName}
                         onChange={(e) => setRewardName(e.currentTarget.value)}
                         required
+                        error={errors.rewardName}
                     />
                     <TextInput
                         placeholder="Reward Description"
@@ -55,12 +84,14 @@ function AdminRewards() {
                         value={rewardPoints}
                         onChange={(value) => setRewardPoints(value)}
                         required
+                        error={errors.rewardPoints}
                     />
                     <DateInput
                         placeholder="Reward Expiry Date"
                         value={rewardExpiryDate}
                         onChange={(date) => setRewardExpiryDate(date)}
                         required
+                        error={errors.rewardExpiryDate}
                     />
                     <Button type="submit">Add Reward</Button>
                 </Group>
@@ -83,3 +114,4 @@ function AdminRewards() {
 }
 
 export default AdminRewards;
+
