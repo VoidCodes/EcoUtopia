@@ -1,0 +1,6 @@
+PS C:\Users\koolp\Downloads\EcoUtopia> git add .
+PS C:\Users\koolp\Downloads\EcoUtopia> git commit -m "Im gay"
+[forum10.0 67cfe74] Im gay
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 test.txt
+PS C:\Users\koolp\Downloads\EcoUtopia> git push
