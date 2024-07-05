@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const db = require('./models');
+const seedAdmin = require('./initialize');
 require('dotenv').config();
 
 
@@ -35,7 +36,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use("/orders", ordersRoute);
 
 
-db.sequelize.sync({ alter: true }).then(() => {
+db.sequelize.sync({ alter: true }).then(async () => {
+    await seedAdmin();
     let port = process.env.APP_PORT;
 
     app.listen(port, () => {
