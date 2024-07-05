@@ -25,7 +25,16 @@ function Courses() {
   const [error, setError] = useState(null);
 
   function formatMySQLTimeString(mysqlTimeString) {
-    return mysqlTimeString.substring(0, 5); // Extracts and returns the "HH:mm" part
+    // Split the MySQL time string into hours, minutes, and seconds
+    const [hours, minutes] = mysqlTimeString.split(':');
+    
+    // Convert hours from 24-hour to 12-hour format and determine AM/PM
+    const ampm = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+    let hours12 = parseInt(hours, 10) % 12;
+    hours12 = hours12 ? hours12 : 12; // Convert hour '0' to '12'
+    
+    // Return the formatted time string with AM/PM
+    return `${hours12}:${minutes} ${ampm}`;
   } 
 
   useEffect(() => {
@@ -84,7 +93,12 @@ function Courses() {
                 {course.course_type}
               </Badge>
             </Paper>
-            <Text fw={700} c={'purple'} weight={700}>{dayjs(course.start_date).format("DD MMM YYYY")} | {formatMySQLTimeString(course.course_start_time)} - {formatMySQLTimeString(course.course_end_time)}</Text>
+            <Text 
+            fw={700} 
+            c={'purple'} 
+            weight={700}>
+              {dayjs(course.start_date).format("DD MMM YYYY")} | {formatMySQLTimeString(course.course_start_time)} - {formatMySQLTimeString(course.course_end_time)}
+            </Text>
             <Text align="center" fw={700} style={{ margin: 10 }}>
               {course.course_name}
             </Text>
