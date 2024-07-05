@@ -9,9 +9,11 @@ import App from './pages/App.jsx'
 import TestPage from './pages/TestPage.jsx';
 import Courses from './pages/Courses.jsx';
 import ViewCourse from './pages/ViewCourse.jsx';
+import ViewOrders from './pages/ViewOrder.jsx';
 import ViewRewards from './pages/Rewards.jsx';
 import Login from './pages/Login.jsx'
 import Registration from './pages/Registration';
+import ChangePassword from './pages/ChangePassword';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Orders from './pages/Orders';
@@ -72,6 +74,7 @@ function Main() {
         <Route path="/" element={<App />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/course/:courseId" element={<ViewCourse />} />
+        <Route path="/orderdetails/:orderId" element={<ViewOrders />} />
         <Route path="/rewards" element={<ViewRewards />} />
         <Route path="/login" element={<Login />} />
         <Route path="/test" element={<TestPage />} />
@@ -79,6 +82,7 @@ function Main() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/edit-profile/:id" element={<EditProfile />} />
+        <Route path="/change-password/:id" element={<ChangePassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/admin/orders" element={<AdminOrders />} />
