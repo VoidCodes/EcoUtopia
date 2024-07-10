@@ -1,23 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-
 import { AuthProvider } from './context/AuthContext.jsx';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 // Pages and components
-import App from './pages/App.jsx'
+import App from './pages/App.jsx';
 import TestPage from './pages/TestPage.jsx';
 import Courses from './pages/Courses.jsx';
 import ViewCourse from './pages/ViewCourse.jsx';
 import ViewOrders from './pages/ViewOrder.jsx';
 import ViewRewards from './pages/Rewards.jsx';
-import Login from './pages/Login.jsx'
-import Registration from './pages/Registration';
-import ChangePassword from './pages/ChangePassword';
-import Profile from './pages/Profile';
-import EditProfile from './pages/EditProfile';
+import Registration from './pages/Registration.jsx';
+import Login from './pages/Login.jsx';
+import Profile from './pages/Profile.jsx';
+import EditProfile from './pages/EditProfile.jsx';
+import ChangePassword from './pages/ChangePassword.jsx';
+import ResetPasswordEnterEmail from './pages/ResetPasswordEnterEmail.jsx';
+import ResetPasswordEnterCode from './pages/ResetPasswordEnterCode.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
+import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
+import AccountManagement from './pages/AccountManagement.jsx';
+import AccountActivation from './pages/AccountActivation.jsx'
 import Orders from './pages/Orders';
 import EditOrders from './pages/admin/EditOrders';
+import OrderDetails from './pages/OrderDetails';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
@@ -33,7 +39,7 @@ import {
 } from 'react-router-dom'
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
-import { MantineProvider, createTheme, rem } from '@mantine/core'
+import { MantineProvider, createTheme, Box, rem } from '@mantine/core'
 
 const theme = createTheme({
   //primaryColor: 'violet'
@@ -69,7 +75,7 @@ const theme = createTheme({
 function Main() {
   return (
     <>
-      {/*<Box padding="xl" style={{marginTop: '70px'}} /> */}
+      <Box padding="xl" style={{marginTop: '70px'}} />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/courses" element={<Courses />} />
@@ -80,11 +86,19 @@ function Main() {
         <Route path="/test" element={<TestPage />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/profile/:paramId" element={<Profile />} />
         <Route path="/edit-profile/:id" element={<EditProfile />} />
+        <Route path="/change-password/:id" element={<ChangePassword />} />
+        <Route path="/reset-password-email" element={<ResetPasswordEnterEmail />} />
+        <Route path="/reset-password-code" element={<ResetPasswordEnterCode />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/password-reset-success" element={<PasswordResetSuccess />} />
+        <Route path="/account-management" element={<AccountManagement/>} />
+        <Route path="/account-activation" element={<AccountActivation/>} />
         <Route path="/change-password/:id" element={<ChangePassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
+        <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/admin/create-course" element={<CreateCourse />} />
@@ -97,18 +111,16 @@ function Main() {
   )
 }
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="light">
-      <GoogleReCaptchaProvider reCaptchaKey = {import.meta.env.VITE_RECAPTCHA_SITE_KEY}>
+      <GoogleReCaptchaProvider reCaptchaKey = {import.meta.env.VITE_RECAPTCHA_SITE_KEY} />
         <AuthProvider>
           <BrowserRouter>
             <Main />
           </BrowserRouter>
         </AuthProvider>
-      </GoogleReCaptchaProvider>
     </MantineProvider>
   </React.StrictMode>
 )

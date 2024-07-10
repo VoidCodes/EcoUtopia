@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import http from '../http';
 import https from '../https'
 import global from '../global';
 import dayjs from 'dayjs';
@@ -18,6 +20,18 @@ import {
   Box,
   SegmentedControl,
 } from "@mantine/core";
+import { FaRegEye } from "react-icons/fa6";
+import {
+  Container,
+  Grid,
+  Anchor,
+  Card,
+  Text,
+  Button,
+  Group,
+  SegmentedControl,
+} from "@mantine/core";
+import LoaderComponent from '../components/Loader.jsx';
 
 function Orders() {
   const [orderslist, setOrdersList] = useState([]);
@@ -31,10 +45,20 @@ function Orders() {
 
     return () => clearTimeout(timer);
   }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    https.get('/orders').then((res) => {
+    let timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300); // Display loader for at least 0.3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    http.get('/orders').then((res) => {
       console.log(res.data);
+      setOrdersList(res.data);
       setOrdersList(res.data);
     });
   }, []);
@@ -58,6 +82,23 @@ function Orders() {
         return { backgroundColor: '#0F9D58' };
       case 'Refunded':
         return { backgroundColor: '#DB4437' };
+      default:
+        return {};
+    }
+  };
+
+  if (!orderslist.length && isLoading) {
+    return <LoaderComponent />;
+  }
+
+  const getCardStyle = (status) => {
+    switch (status) {
+      case 'Upcoming':
+        return { backgroundColor: '#1F51FF' };
+      case 'Completed':
+        return { backgroundColor: '#0f9d58' };
+      case 'Refunded':
+        return { backgroundColor: 'red' };
       default:
         return {};
     }
@@ -104,7 +145,11 @@ function Orders() {
               {filter === 'Upcoming' && (
                 <Anchor component={Link} to={`/editorders/${order.order_id}`} style={{ textDecoration: 'none' }}>
                   <Button size="xs" color="white" variant="outline">
+                <Anchor component={Link} to={`/editorders/${order.order_id}`} style={{ textDecoration: 'none' }}>
+                  <Button size="xs" color="white" variant="outline">
                     <CiEdit />
+                  </Button>
+                </Anchor>
                   </Button>
                 </Anchor>
               )}
@@ -119,7 +164,20 @@ function Orders() {
               <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(global.datetimeFormat)}</Text>
             </Card>
           </Grid.Col>
+              <Anchor component={Link} to={`/orderdetails/${order.order_id}`} style={{ textDecoration: 'none' }}>
+                <Button size="xs" color="white" variant="outline">
+                  <FaRegEye />
+                </Button>
+              </Anchor>
+            </Group>
+              <Text mt="sm" style={{ color: 'white' }}>Course Title: {order.Course.course_name}</Text>
+              <Text style={{ color: 'white' }}>Status: {order.order_status}</Text>
+              <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(global.datetimeFormat)}</Text>
+            </Card>
+          </Grid.Col>
         ))}
+      </Grid>
+    </Container>
       </Grid>
     </Container>
   );

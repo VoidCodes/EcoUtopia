@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, Resident, Staff } = require('../models');
+const { User, Resident, Staff } = require('../models');
 const yup = require('yup');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
@@ -20,16 +21,77 @@ const userSchema = yup.object().shape({
 });
 
 // Generate JWT token
-const generateToken = (user) => {
-    return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateToken = (user, additionalInfo) => {
+    const payload = {
+      id: user.user_id,  // Ensure user ID is included correctly
+      role: user.role,
+      ...additionalInfo
+    };
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
+  
 
-// Create a new user and resident with input validation
+// Create a new user and resident with input validation (This is for Registration, require reCaptcha)
 router.post('/register', verifyRecaptcha, async (req, res) => {
+    const transaction = await User.sequelize.transaction();
+    try {
+      await userSchema.validate(req.body);
+      const { email, password, role, firstName, lastName, contactNumber } = req.body;
+  
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      const newUser = await User.create({
+        email,
+        password: hashedPassword,
+        role
+      }, { transaction });
+  
+      let newUserDetails;
+      if (role === 'RESIDENT') {
+        newUserDetails = await Resident.create({
+          name: `${firstName} ${lastName}`,
+          mobile_num: contactNumber,
+          user_id: newUser.user_id
+        }, { transaction });
+      } else if (role === 'STAFF') {
+        newUserDetails = await Staff.create({
+          name: `${firstName} ${lastName}`,
+          mobilenum: contactNumber,
+          user_id: newUser.user_id
+        }, { transaction });
+      }
+  
+      await transaction.commit();
+  
+      const token = generateToken(newUser, { resident: newUserDetails });
+      res.status(201).json({ user: newUser, token, resident: newUserDetails });
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Registration error:', error);
+      res.status(500).json({ error: error.message });
+    }
+});
+  
+  
+
+// Create a new user and either resident or staff with input validation (This is for AccountManagement)
+router.post('/createaccount', authenticateToken, async (req, res) => {
     const transaction = await User.sequelize.transaction();
     try {
         await userSchema.validate(req.body);
         const { email, password, role, firstName, lastName, contactNumber } = req.body;
+
+        // Check if email already exists
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+
 
         // Check if email already exists
         const existingUser = await User.findOne({ where: { email } });
@@ -45,30 +107,50 @@ router.post('/register', verifyRecaptcha, async (req, res) => {
             role
         }, { transaction });
 
-        const newResident = await Resident.create({
-            name: `${firstName} ${lastName}`,
-            mobile_num: contactNumber,
-            user_id: newUser.user_id
-        }, { transaction });
+        let newUserDetails;
+
+        if (role === 'RESIDENT') {
+            newUserDetails = await Resident.create({
+                name: `${firstName} ${lastName}`,
+                mobile_num: contactNumber,
+                user_id: newUser.user_id
+            }, { transaction });
+        } else if (role === 'STAFF') {
+            newUserDetails = await Staff.create({
+                name: `${firstName} ${lastName}`,
+                mobilenum: contactNumber,
+                user_id: newUser.user_id
+            }, { transaction });
+        } else {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
 
         await transaction.commit();
 
         const token = generateToken(newUser);
-        res.status(201).json({ user: newUser, resident: newResident, token });
+        res.status(201).json({ user: newUser, userDetails: newUserDetails, token });
     } catch (error) {
         await transaction.rollback();
-        console.error('Registration error:', error);  // Add this line to log the error details
+        console.error('Registration error:', error);  // Log the error details
         res.status(500).json({ error: error.message });
     }
 });
 
-// Authenticate user and generate JWT token
+// Create new Login Request
 router.post('/login', verifyRecaptcha, async (req, res) => {
     try {
       const user = await User.findOne({ where: { email: req.body.email } });
       if (user && await bcrypt.compare(req.body.password, user.password)) {
-        const token = generateToken(user);
-        res.status(200).json({ user, token }); // Ensure 'user' and 'token' are returned
+        let additionalInfo = {};
+        if (user.role === 'RESIDENT') {
+          const resident = await Resident.findOne({ where: { user_id: user.user_id } });
+          additionalInfo = { resident };
+        } else if (user.role === 'STAFF') {
+          const staff = await Staff.findOne({ where: { user_id: user.user_id } });
+          additionalInfo = { staff };
+        }
+        const token = generateToken(user, additionalInfo);
+        res.status(200).json({ user, token, ...additionalInfo });
       } else {
         res.status(401).json({ error: 'Invalid credentials' });
       }
@@ -78,11 +160,24 @@ router.post('/login', verifyRecaptcha, async (req, res) => {
     }
 });
   
+  
+  
 
 // Read all users (accessible by STAFF only)
 router.get('/', authenticateToken, authorizeRoles('STAFF'), async (req, res) => {
     try {
-        const users = await User.findAll();
+        const users = await User.findAll({
+            include: [
+                {
+                    model: Staff,
+                    attributes: ['name', 'mobilenum']
+                },
+                {
+                    model: Resident,
+                    attributes: ['name', 'mobile_num']
+                }
+            ]
+        });
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -115,10 +210,34 @@ router.get('/:id', authenticateToken, authorizeRoles('RESIDENT', 'STAFF'), async
         }
 
         res.status(200).json({ user, resident, staff });
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        let resident = null;
+        let staff = null;
+
+        if (user.role === 'RESIDENT') {
+            resident = await Resident.findOne({ where: { user_id: user.user_id } });
+            if (!resident) {
+                return res.status(404).json({ error: 'Resident details not found' });
+            }
+        }
+
+        if (user.role === 'STAFF') {
+            staff = await Staff.findOne({ where: { user_id: user.user_id } });
+            if (!staff) {
+                return res.status(404).json({ error: 'Staff details not found' });
+            }
+        }
+
+        res.status(200).json({ user, resident, staff });
     } catch (error) {
         res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  });
+});
 
 
 // Update user details
@@ -132,11 +251,23 @@ router.put('/:id', authenticateToken, authorizeRoles('RESIDENT', 'STAFF'), async
 
         let updatedUser, updatedResident, updatedStaff;
 
+        let updatedUser, updatedResident, updatedStaff;
+
         // Update user details
         updatedUser = await user.update({
             email: req.body.email
         });
 
+        if (user.role === 'RESIDENT') {
+            const resident = await Resident.findOne({ where: { user_id: req.params.id } });
+            if (!resident) {
+                return res.status(404).json({ error: 'Resident details not found' });
+            }
+            updatedResident = await resident.update({
+                name: `${req.body.firstName} ${req.body.lastName}`,
+                mobile_num: req.body.mobileNumber
+            });
+        }
         if (user.role === 'RESIDENT') {
             const resident = await Resident.findOne({ where: { user_id: req.params.id } });
             if (!resident) {
@@ -160,10 +291,23 @@ router.put('/:id', authenticateToken, authorizeRoles('RESIDENT', 'STAFF'), async
         }
 
         res.status(200).json({ user: updatedUser, resident: updatedResident, staff: updatedStaff });
+        if (user.role === 'STAFF') {
+            const staff = await Staff.findOne({ where: { user_id: req.params.id } });
+            if (!staff) {
+                return res.status(404).json({ error: 'Staff details not found' });
+            }
+            updatedStaff = await staff.update({
+                name: `${req.body.firstName} ${req.body.lastName}`,
+                mobilenum: req.body.mobileNumber
+            });
+        }
+
+        res.status(200).json({ user: updatedUser, resident: updatedResident, staff: updatedStaff });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 // Delete a user (soft delete, accessible by STAFF only)
@@ -173,8 +317,8 @@ router.put('/softdelete/:id', authenticateToken, authorizeRoles('STAFF'), async 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        await user.update({ is_deleted: true });
-        res.status(200).json({ message: 'User deleted successfully' });
+        const updatedUser = await user.update({ is_deleted: true });
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -237,13 +381,17 @@ router.put('/softrestore/:id', authenticateToken, authorizeRoles('STAFF'), async
     }
 });
 
-// Create activation code and send email
-router.post('/activate', async (req, res) => { // Removed verifyRecaptcha
+// Create activation code and send email. Token is available here since User has logged in(Email is not verified but login is still authenticated).
+router.post('/activate', authenticateToken, async (req, res) => {
     try {
-        const user = await User.findOne({ where: { email: req.body.email } });
+        const { email } = req.body;
+        console.log('Received email for activation:', email); // Debugging line to check email value
+
+        const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
         const activationCode = crypto.randomBytes(20).toString('hex');
         user.activation_code = activationCode;
         user.activation_code_expiry = new Date(Date.now() + 1800000); // 30 minutes expiry
@@ -267,32 +415,104 @@ router.post('/activate', async (req, res) => { // Removed verifyRecaptcha
             text: `Your activation code is: ${activationCode}`
         };
 
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Activation code sent' });
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.error('Error sending email:', err);
+                return res.status(500).json({ error: 'Failed to send activation email' });
+            }
+            console.log('Activation email sent:', info.response);
+            res.status(200).json({ message: 'Activation code sent' });
+        });
+
+    } catch (error) {
+        console.error('Activation error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// Verify activation code and activate account. Token is available here since User has logged in(Email is not verified but login is still authenticated).
+router.post('/activate-account', authenticateToken, async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        const user = await User.findOne({
+            where: {
+                email,
+                activation_code: code,
+                activation_code_expiry: { [Op.gt]: new Date() }
+            }
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired activation code' });
+        }
+
+        user.is_activated = true;
+        user.activation_code = null;
+        user.activation_code_expiry = null;
+        await user.save();
+
+        res.status(200).json({ message: 'Account activated successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
+// Change password
+router.put('/change-password/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+  
+    try {
+      const user = await User.findByPk(id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+  
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: 'New passwords do not match' });
+      }
+  
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+  
+      res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 // Reset password request
 router.post('/password-reset', async (req, res) => { // Removed verifyRecaptcha
     try {
+        console.log("Request received to /password-reset with email:", req.body.email);
+        
         const user = await User.findOne({ where: { email: req.body.email } });
         if (!user) {
+            console.log("User not found for email:", req.body.email);
             return res.status(404).json({ error: 'User not found' });
         }
+
         const resetCode = crypto.randomBytes(20).toString('hex');
         user.password_reset_code = resetCode;
         user.password_reset_expiry = new Date(Date.now() + 1800000); // 30 minutes expiry
         await user.save();
 
-        // Set up Nodemailer
+        console.log("Password reset code generated and saved for user:", user.email);
+
+        // Set up Nodemailer with permanent Ethereal account credentials
         const transporter = nodemailer.createTransport({
             host: 'smtp.ethereal.email',
             port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: process.env.ETHEREAL_USER,
-                pass: process.env.ETHEREAL_PASS
+                user: process.env.ETHEREAL_USER, // your Ethereal user
+                pass: process.env.ETHEREAL_PASS  // your Ethereal password
             }
         });
 
@@ -304,9 +524,36 @@ router.post('/password-reset', async (req, res) => { // Removed verifyRecaptcha
             text: `Your password reset code is: ${resetCode}`
         };
 
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Password reset code sent' });
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.log('Error occurred. ' + err.message);
+                return res.status(500).json({ error: 'Failed to send email' });
+            }
+
+            console.log('Message sent: %s', info.messageId);
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+            res.status(200).json({ message: 'Password reset code sent', previewUrl: nodemailer.getTestMessageUrl(info) });
+        });
     } catch (error) {
+        console.error('Error in /password-reset route:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Reset password
+router.post('/validate-reset-code', async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        
+        const user = await User.findOne({ where: { email, password_reset_code: code, password_reset_expiry: { [Op.gt]: new Date() } } });
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid or expired reset code' });
+        }
+
+        res.status(200).json({ message: 'Reset code is valid' });
+    } catch (error) {
+        console.error('Error in /validate-reset-code route:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
@@ -314,11 +561,12 @@ router.post('/password-reset', async (req, res) => { // Removed verifyRecaptcha
 // Reset password
 router.put('/password-reset/:code', async (req, res) => {
     try {
-        const user = await User.findOne({ where: { password_reset_code: req.params.code, password_reset_expiry: { [Op.gt]: new Date() } } });
+        const { email, password } = req.body;
+        const user = await User.findOne({ where: { email, password_reset_code: req.params.code, password_reset_expiry: { [Op.gt]: new Date() } } });
         if (!user) {
             return res.status(400).json({ error: 'Invalid or expired password reset code' });
         }
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
         user.password_reset_code = null;
         user.password_reset_expiry = null;
@@ -329,12 +577,15 @@ router.put('/password-reset/:code', async (req, res) => {
     }
 });
 
+
 // Route to upload or update a profile picture
 router.post('/profile-picture', upload.single('profilePic'), async (req, res) => {
     const userId = req.body.userId; // Ensure the user is authenticated
     try {
         const resident = await Resident.findOne({ where: { user_id: userId } });
         const staff = await Staff.findOne({ where: { user_id: userId } });
+        const staff = await Staff.findOne({ where: { user_id: userId } });
+
         if (resident) {
             // Delete old profile picture if exists
             if (resident.profile_pic && fs.existsSync(`./public/uploads/${resident.profile_pic}`)) {
@@ -355,7 +606,19 @@ router.post('/profile-picture', upload.single('profilePic'), async (req, res) =>
             staff.profile_pic = req.file.filename;
             await staff.save();
             res.send({ message: 'Staff profile picture updated successfully', fileName: req.file.filename });
+            res.send({ message: 'Resident profile picture updated successfully', fileName: req.file.filename });
+        } else if (staff) {
+            // Delete old profile picture if exists
+            if (staff.profile_pic && fs.existsSync(`./public/uploads/${staff.profile_pic}`)) {
+                fs.unlinkSync(`./public/uploads/${staff.profile_pic}`);
+            }
+
+            // Update new profile picture filename in the database
+            staff.profile_pic = req.file.filename;
+            await staff.save();
+            res.send({ message: 'Staff profile picture updated successfully', fileName: req.file.filename });
         } else {
+            res.status(404).send({ message: 'User not found' });
             res.status(404).send({ message: 'User not found' });
         }
     } catch (error) {
@@ -387,4 +650,27 @@ router.delete('/profile-picture', async (req, res) => {
     }
 });
 
+// Hard delete a user (accessible by STAFF only, but never used)
+router.delete('/:id', authenticateToken, authorizeRoles('STAFF'), async (req, res) => {
+    try {
+        const user = await User.findByPk(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Delete associated records
+        if (user.role === 'RESIDENT') {
+            await Resident.destroy({ where: { user_id: user.user_id } });
+        } else if (user.role === 'STAFF') {
+            await Staff.destroy({ where: { user_id: user.user_id } });
+        }
+
+        await user.destroy();
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
+
