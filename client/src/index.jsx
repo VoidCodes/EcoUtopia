@@ -106,6 +106,7 @@ root.render(
             <Main />
           </BrowserRouter>
         </AuthProvider>
+      </GoogleReCaptchaProvider>
     </MantineProvider>
   </React.StrictMode>
 )
