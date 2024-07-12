@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { User, Resident, Staff } = require('../models');
-const { User, Resident, Staff } = require('../models');
 const yup = require('yup');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
@@ -85,13 +84,6 @@ router.post('/createaccount', authenticateToken, async (req, res) => {
     try {
         await userSchema.validate(req.body);
         const { email, password, role, firstName, lastName, contactNumber } = req.body;
-
-        // Check if email already exists
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Email already exists' });
-        }
-
 
         // Check if email already exists
         const existingUser = await User.findOne({ where: { email } });
@@ -210,27 +202,6 @@ router.get('/:id', authenticateToken, authorizeRoles('RESIDENT', 'STAFF'), async
         }
 
         res.status(200).json({ user, resident, staff });
-        const user = await User.findByPk(req.params.id);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        let resident = null;
-        let staff = null;
-
-        if (user.role === 'RESIDENT') {
-            resident = await Resident.findOne({ where: { user_id: user.user_id } });
-            if (!resident) {
-                return res.status(404).json({ error: 'Resident details not found' });
-            }
-        }
-
-        if (user.role === 'STAFF') {
-            staff = await Staff.findOne({ where: { user_id: user.user_id } });
-            if (!staff) {
-                return res.status(404).json({ error: 'Staff details not found' });
-            }
-        }
 
         res.status(200).json({ user, resident, staff });
     } catch (error) {
@@ -248,8 +219,6 @@ router.put('/:id', authenticateToken, authorizeRoles('RESIDENT', 'STAFF'), async
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-        let updatedUser, updatedResident, updatedStaff;
 
         let updatedUser, updatedResident, updatedStaff;
 
@@ -584,7 +553,6 @@ router.post('/profile-picture', upload.single('profilePic'), async (req, res) =>
     try {
         const resident = await Resident.findOne({ where: { user_id: userId } });
         const staff = await Staff.findOne({ where: { user_id: userId } });
-        const staff = await Staff.findOne({ where: { user_id: userId } });
 
         if (resident) {
             // Delete old profile picture if exists
@@ -618,7 +586,6 @@ router.post('/profile-picture', upload.single('profilePic'), async (req, res) =>
             await staff.save();
             res.send({ message: 'Staff profile picture updated successfully', fileName: req.file.filename });
         } else {
-            res.status(404).send({ message: 'User not found' });
             res.status(404).send({ message: 'User not found' });
         }
     } catch (error) {
