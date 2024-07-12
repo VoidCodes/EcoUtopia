@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { Orders, Course } = require('../models');
 const { Model } = require('sequelize');
-const { Model } = require('sequelize');
 
 
 router.post("/", async (req, res) => {
