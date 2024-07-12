@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import https from '../../https';
+import https from '../../http';
 import global from '../../global';
 import dayjs from 'dayjs';
 import { Container, Text, Table, Flex, Loader } from '@mantine/core';
