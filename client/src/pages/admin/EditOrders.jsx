@@ -1,4 +1,4 @@
-import https from '../../https'
+import https from '../../http'
 import dayjs from 'dayjs'
 import global from '../../global'
 import LoaderComponent from '../../components/Loader'
