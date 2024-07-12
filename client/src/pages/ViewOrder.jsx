@@ -1,6 +1,6 @@
-import http from '../https';
+import http from '../http.js';
 import dayjs from 'dayjs';
-import global from '../global';
+import global from '../global.js';
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Text, Container, Card, Button, Group } from '@mantine/core';

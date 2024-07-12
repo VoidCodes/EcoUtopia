@@ -11,11 +11,12 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@mantine/core": "^7.10.2",
-		"@mantine/dates": "^7.10.2",
 		"@hookform/resolvers": "^3.6.0",
-		"@mantine/form": "^7.10.2",
-		"@mantine/hooks": "^7.10.2",
+		"@mantine/core": "^7.11.1",
+		"@mantine/dates": "^7.11.1",
+		"@mantine/form": "^7.11.1",
+		"@mantine/hooks": "^7.11.1",
+		"@rollup/rollup-darwin-arm64": "^4.18.1",
 		"@tabler/icons-react": "^3.6.0",
 		"axios": "^1.7.2",
 		"cors": "^2.8.5",
@@ -36,9 +37,11 @@
 		"yup": "^1.4.0"
 	},
 	"devDependencies": {
+		"@swc/cli": "^0.4.0",
+		"@swc/core": "^1.6.13",
 		"@types/react": "^18.2.66",
 		"@types/react-dom": "^18.2.22",
-		"@vitejs/plugin-react-swc": "^3.5.0",
+		"@vitejs/plugin-react-swc": "^3.7.0",
 		"eslint": "^8.57.0",
 		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-hooks": "^4.6.0",

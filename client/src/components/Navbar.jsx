@@ -43,11 +43,6 @@ function Navbar() {
                 Orders
               </Text>
             </Anchor>
-            <Anchor href="/orders" style={{ textDecoration: "none" }}>
-              <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                Orders
-              </Text>
-            </Anchor>
           </Flex>
           <Flex align="center">
             {location.pathname === '/' && (

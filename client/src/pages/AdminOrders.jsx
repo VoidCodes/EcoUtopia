@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import http from '../http';
 import global from '../global';
 import dayjs from 'dayjs';
