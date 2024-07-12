@@ -22,49 +22,13 @@ app.get("/", (req, res) => {
 
 app.use('/uploads', express.static('uploads'));
 
-// Handle Posts
-app.get('/posts', async (req, res) => {
-    try {
-        const posts = await db.Post.findAll(); // Ensure db.Post is properly initialized
-        res.status(200).json(posts);
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        res.status(500).json({ error: 'Failed to fetch posts' });
-    }
-});
-
-app.post('/posts/:id/report', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const post = await db.Post.findByPk(id);
-        if (!post) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
-        // Handle reporting logic
-        res.status(200).json(post);
-    } catch (error) {
-        console.error('Error reporting post:', error);
-        res.status(500).json({ error: 'Failed to report post' });
-    }
-});
-
-app.delete('/posts/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.Post.destroy({ where: { id } });
-        res.status(204).send();
-    } catch (error) {
-        console.error('Error deleting post:', error);
-        res.status(500).json({ error: 'Failed to delete post' });
-    }
-});
-
 // Routes
+const postRouter = require('./routes/post');
 const courseRoute = require('./routes/course');
 const userRoute = require('./routes/user');
 const ordersRoute = require('./routes/orders');
 
-
+app.use("/posts", postRouter); // Mount the postRouter for /api/posts endpoint
 app.use("/courses", courseRoute);
 app.use('/user', userRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
@@ -78,6 +42,5 @@ db.sequelize.sync({ alter: true }).then(async () => {
         console.log(`Server is running on port ${port}`);
     });
 }).catch((err) => {
-    console.log(err);
+    console.error('Unable to start server:', err);
 });
-
