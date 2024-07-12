@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
 import http from '../http';
-import https from '../https'
 import global from '../global';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -20,18 +18,6 @@ import {
   Box,
   SegmentedControl,
 } from "@mantine/core";
-import { FaRegEye } from "react-icons/fa6";
-import {
-  Container,
-  Grid,
-  Anchor,
-  Card,
-  Text,
-  Button,
-  Group,
-  SegmentedControl,
-} from "@mantine/core";
-import LoaderComponent from '../components/Loader.jsx';
 
 function Orders() {
   const [orderslist, setOrdersList] = useState([]);
@@ -45,7 +31,6 @@ function Orders() {
 
     return () => clearTimeout(timer);
   }, []);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let timer = setTimeout(() => {
@@ -90,19 +75,6 @@ function Orders() {
   if (!orderslist.length && isLoading) {
     return <LoaderComponent />;
   }
-
-  const getCardStyle = (status) => {
-    switch (status) {
-      case 'Upcoming':
-        return { backgroundColor: '#1F51FF' };
-      case 'Completed':
-        return { backgroundColor: '#0f9d58' };
-      case 'Refunded':
-        return { backgroundColor: 'red' };
-      default:
-        return {};
-    }
-  };
 
   if (!orderslist.length && isLoading) {
     return <LoaderComponent />;
@@ -164,20 +136,7 @@ function Orders() {
               <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(global.datetimeFormat)}</Text>
             </Card>
           </Grid.Col>
-              <Anchor component={Link} to={`/orderdetails/${order.order_id}`} style={{ textDecoration: 'none' }}>
-                <Button size="xs" color="white" variant="outline">
-                  <FaRegEye />
-                </Button>
-              </Anchor>
-            </Group>
-              <Text mt="sm" style={{ color: 'white' }}>Course Title: {order.Course.course_name}</Text>
-              <Text style={{ color: 'white' }}>Status: {order.order_status}</Text>
-              <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(global.datetimeFormat)}</Text>
-            </Card>
-          </Grid.Col>
         ))}
-      </Grid>
-    </Container>
       </Grid>
     </Container>
   );
