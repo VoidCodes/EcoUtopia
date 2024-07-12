@@ -7,6 +7,15 @@ const process = require("process");
 const basename = path.basename(__filename);
 const db = {};
 
+console.log("Before sequelize");
+// Log environment variables
+console.log('Environment variables:', {
+  DB_NAME: process.env.DB_NAME,
+  DB_USER: process.env.DB_USER,
+  DB_HOST: process.env.DB_HOST,
+  DB_PORT: process.env.DB_PORT
+})
+
 // Create sequelize instance using config
 let sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -17,9 +26,26 @@ let sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: "mysql",
     logging: false,
-    timezone: "+08:00",
+    timezone: "+08:00"
   }
 );
+
+// Log the start of the connection attempt
+console.log('Attempting to connect to the database...');
+const start = Date.now();
+
+sequelize.authenticate()
+  .then(() => {
+    const duration = Date.now() - start;
+    console.log(`Connection has been established successfully. Duration: ${duration} ms`);
+    console.log('Database connection successful');
+  })
+  .catch(err => {
+    const duration = Date.now() - start;
+    console.error(`Unable to connect to the database. Duration: ${duration} ms, Error: ${err}`);
+  });
+
+
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
