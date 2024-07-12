@@ -53,15 +53,14 @@ function Courses() {
     fetchCourses();
     document.title = "Courses - EcoUtopia";
   }, []);
-
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
   if (courses.length === 0) return <Text align="center">No courses found</Text>;
 
   return (
     <Container size="xl" style={{ marginTop: 20 }}>
-      <Box padding="xl" style={{marginTop: '70px'}} />
-      <Navbar />
+       <Box padding="xl" style={{marginTop: '70px'}} />
+       <Navbar />
       <Text
         align="start"
         weight={700}
