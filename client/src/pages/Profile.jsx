@@ -1,4 +1,6 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Container,
@@ -10,8 +12,6 @@ import {
   Grid,
   TextInput,
 } from "@mantine/core";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { IconPhoto } from "@tabler/icons-react";
 import LoaderComponent from "../components/Loader.jsx";
