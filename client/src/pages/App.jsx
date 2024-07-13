@@ -43,7 +43,7 @@ function App() {
           <Button color='teal'>Click me</Button>
         </Anchor>
       </Group>
-      <TimeInput withSeconds label="Click icon to show browser picker" ref={ref} rightSection={pickerControl} />
+      <TimeInput withSeconds label="Click icon to show browser picker" ref={ref} rightSection={pickerControl} w={250} />
     </Container>
   )
 }
