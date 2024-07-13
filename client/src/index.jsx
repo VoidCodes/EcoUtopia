@@ -10,6 +10,10 @@ import Courses from './pages/Courses.jsx';
 import ViewCourse from './pages/ViewCourse.jsx';
 import ViewOrders from './pages/ViewOrder.jsx';
 import ViewRewards from './pages/Rewards.jsx';
+import Orders from './pages/Orders';
+import EditOrders from './pages/admin/EditOrders';
+import OrderDetails from './pages/OrderDetails';
+import Posts from './pages/Posts.jsx';
 import Registration from './pages/Registration.jsx';
 import Login from './pages/Login.jsx';
 import Profile from './pages/Profile.jsx';
@@ -21,9 +25,6 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
-import Orders from './pages/Orders';
-import EditOrders from './pages/admin/EditOrders';
-import OrderDetails from './pages/OrderDetails';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
@@ -97,6 +98,7 @@ function Main() {
         <Route path="/account-activation" element={<AccountActivation/>} />
         <Route path="/change-password/:id" element={<ChangePassword />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/posts" element={<Posts />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
