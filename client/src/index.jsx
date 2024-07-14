@@ -44,6 +44,7 @@ import { MantineProvider, createTheme, Box, rem } from '@mantine/core'
 
 const theme = createTheme({
   //primaryColor: 'violet'
+  fontFamily: 'Open Sans, sans-serif',
   colors: {
     /* Add your custom colors here */
     deepBlue: [
@@ -58,6 +59,18 @@ const theme = createTheme({
       '#39588f',
       '#2d4b81',
     ],
+    deepRed: [
+      '#fde9e9',
+      '#f9d3d3',
+      '#f4b7b7',
+      '#f09b9b',
+      '#ed7f7f',
+      '#eb6c6c',
+      '#ea6363',
+      '#e85454',
+      '#e44a4a',
+      '#e03b3b',
+    ],
   },
 
   shadows: {
@@ -66,7 +79,7 @@ const theme = createTheme({
   },
 
   headings: {
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: 'Open Sans, sans-serif',
     sizes: {
       h1: { fontSize: rem(36) },
     },
