@@ -7,15 +7,6 @@ const process = require("process");
 const basename = path.basename(__filename);
 const db = {};
 
-console.log("Before sequelize");
-// Log environment variables
-console.log('Environment variables:', {
-  DB_NAME: process.env.DB_NAME,
-  DB_USER: process.env.DB_USER,
-  DB_HOST: process.env.DB_HOST,
-  DB_PORT: process.env.DB_PORT
-})
-
 // Create sequelize instance using config
 let sequelize = new Sequelize(
   process.env.DB_NAME,
