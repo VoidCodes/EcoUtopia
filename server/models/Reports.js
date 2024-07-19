@@ -1,38 +1,57 @@
 module.exports = (sequelize, DataTypes) => {
-    const Report = sequelize.define("Reports", {
-        report_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true
+  const Report = sequelize.define(
+    "Report",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userEmail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      question1: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 1,
+          max: 10,
         },
-        report_date: {
-            type: DataTypes.DATE,
-            allowNull: false
+      },
+      question2: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 1,
+          max: 10,
         },
-        report_time: {
-            type: DataTypes.TIME,
-            allowNull: false
-        },
-        report_desc: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        report_status: {
-            type: DataTypes.STRING,
-            allowNull: false
-        }
+      },
+      longAnswer: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      problemsEncountered: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      screenshot: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "pending",
+      },
+    },
+    {
+      tableName: "reports",
+    }
+  );
 
-    }, {
-        tableName: 'reports',
-    });
-    Report.associate = (models) => {
-        Report.belongsTo(models.Resident, { foreignKey: 'resident_id'})
-    };
+  Report.associate = (models) => {
+    Report.belongsTo(models.Resident, { foreignKey: "resident_id" });
+  };
 
-    Report.associate = (models) => {
-        Report.belongsTo(models.Resident, { foreignKey: 'resident_id'})
-    };
-
-    return Report;
-}
+  return Report;
+};
