@@ -1,5 +1,6 @@
 import http from '../http';
 import global from '../global';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -19,8 +20,10 @@ import {
   SegmentedControl,
 } from "@mantine/core";
 
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'; // Define your date format here
+
 function Orders() {
-  const [orderslist, setOrdersList] = useState([]);
+  const [ordersList, setOrdersList] = useState([]);
   const [filter, setFilter] = useState('Upcoming');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,26 +36,27 @@ function Orders() {
   }, []);
 
   useEffect(() => {
-    let timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300); // Display loader for at least 0.3 seconds
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('/orders', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        setOrdersList(response.data);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    http.get('/orders').then((res) => {
-      console.log(res.data);
-      setOrdersList(res.data);
-      setOrdersList(res.data);
-    });
+    fetchOrders();
   }, []);
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
   };
 
-  const filteredOrders = orderslist.filter((order) => {
+  const filteredOrders = ordersList.filter((order) => {
     if (filter === 'Upcoming') return order.order_status === 'Upcoming';
     if (filter === 'Completed') return order.order_status === 'Completed';
     if (filter === 'Refunded') return order.order_status === 'Refunded';
@@ -72,7 +76,7 @@ function Orders() {
     }
   };
 
-  if (!orderslist.length && isLoading) {
+  if (!ordersList.length && isLoading) {
     return <LoaderComponent />;
   }
 
@@ -131,9 +135,10 @@ function Orders() {
                 </Button>
               </Anchor>
             </Group>
+=
               <Text mt="sm" style={{ color: 'white' }}>Course Title: {order.Course.course_name}</Text>
               <Text style={{ color: 'white' }}>Status: {order.order_status}</Text>
-              <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(global.datetimeFormat)}</Text>
+              <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(DATE_FORMAT)}</Text>
             </Card>
           </Grid.Col>
         ))}
