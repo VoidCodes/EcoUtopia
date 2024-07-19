@@ -51,7 +51,7 @@ const Posts = () => {
                 },
             });
             console.log(response.data);
-            fetchPosts();
+            //fetchPosts();
             setIsModalOpen(false); // Close the modal after deletion
         } catch (error) {
             console.error('Error deleting post:', error);
