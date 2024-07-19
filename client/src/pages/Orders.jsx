@@ -3,7 +3,6 @@ import global from '../global';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 import { FaRegEye } from "react-icons/fa6";
