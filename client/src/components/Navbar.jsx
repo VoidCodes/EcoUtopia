@@ -33,6 +33,18 @@ function Navbar() {
                 Courses
               </Text>
             </Anchor>
+            <Anchor href="/posts" style={{ textDecoration: "none" }}>
+              <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
+                Posts
+              </Text>
+            </Anchor>
+            {user && (
+              <Anchor href="/createPost" style={{ textDecoration: "none" }}>
+                <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
+                  Create Post
+                </Text>
+              </Anchor>
+            )}
             <Anchor href="/rewards" style={{ textDecoration: "none" }}>
               <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
                 Rewards
@@ -45,35 +57,25 @@ function Navbar() {
             </Anchor>
           </Flex>
           <Flex align="center">
-            {location.pathname === '/' && (
+            {!user && (
               <>
-                <Anchor href="/login" style={{ textDecoration: "none" }}>
-                  <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                    Login
-                  </Button>
-                </Anchor>
-                <Anchor href="/register" style={{ textDecoration: "none" }}>
-                  <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                    Sign Up
-                  </Button>
-                </Anchor>
+                {location.pathname !== '/login' && (
+                  <Anchor href="/login" style={{ textDecoration: "none" }}>
+                    <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
+                      Login
+                    </Button>
+                  </Anchor>
+                )}
+                {location.pathname !== '/register' && (
+                  <Anchor href="/register" style={{ textDecoration: "none" }}>
+                    <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
+                      Sign Up
+                    </Button>
+                  </Anchor>
+                )}
               </>
             )}
-            {location.pathname === '/register' && (
-              <Anchor href="/login" style={{ textDecoration: "none" }}>
-                <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                  Login
-                </Button>
-              </Anchor>
-            )}
-            {location.pathname === '/login' && (
-              <Anchor href="/register" style={{ textDecoration: "none" }}>
-                <Button color="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                  Sign Up
-                </Button>
-              </Anchor>
-            )}
-            {location.pathname === '/account-management' && user && (
+            {user && (
               <Button color="red" style={{ marginLeft: 10, marginRight: 10 }} onClick={handleLogout}>
                 Logout
               </Button>
