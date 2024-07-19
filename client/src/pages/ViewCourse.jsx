@@ -9,18 +9,20 @@ import {
   Image,
   Group,
   Title,
+  Box,
 } from '@mantine/core';
 import { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 function ViewCourse() {
-  const { courseId } = useParams();
-  const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const { courseId } = useParams()
+    const [course, setCourse] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
   useEffect(() => {
-    document.title = 'Course Details - EcoUtopia';
+        document.title = 'Course Details - EcoUtopia'
     const fetchCourse = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/api/courses/getCourse/${courseId}`);
@@ -45,7 +47,7 @@ function ViewCourse() {
   if (error) {
     return (
       <Container size="xl">
-        <Text color="red" align="center" size="xl" style={{ marginTop: 20 }}>
+        <Text c="red" align="center" size="xl" style={{ marginTop: 20 }}>
           {error.message}
         </Text>
       </Container>
@@ -57,16 +59,18 @@ function ViewCourse() {
       .then((res) => {
         //go to the order page
         window.location.href = '/orders';
+        console.log(res.data);
       })
       .catch((error) => {
         console.error("There was an error adding the course to the order!", error);
       });
   };
 
-  if (!course) return <p>Loading...</p>;
-
+  if (!course) return <Text c="red" align="center" size="xl" style={{ marginTop: 20 }}>Course not found!</Text>;
   return (
     <Container size="xl">
+      <Box padding="xl" style={{ backgroundColor: '#f5f5f5' }} />
+      <Navbar />
       <Paper padding="xl" shadow="xs" style={{ marginTop: 20 }}>
         <Grid>
           <Grid.Col span={6}>

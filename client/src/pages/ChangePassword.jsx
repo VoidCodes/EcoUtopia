@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from '@mantine/form';
-import { TextInput, PasswordInput, Button, Container, Paper, Title, Box, Alert } from '@mantine/core';
+import { PasswordInput, Button, Container, Paper, Title, Alert } from '@mantine/core';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 

@@ -1,11 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import http from '../http';
+import global from '../global';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 import { FaRegEye } from "react-icons/fa6";
-import { Container, Grid, Anchor, Card, Text, Button, Group, SegmentedControl } from "@mantine/core";
 import LoaderComponent from '../components/Loader.jsx';
+import Navbar from '../components/Navbar.jsx'
+import {
+  Container,
+  Grid,
+  Anchor,
+  Card,
+  Text,
+  Button,
+  Group,
+  Box,
+  SegmentedControl,
+} from "@mantine/core";
 
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'; // Define your date format here
 
@@ -53,11 +67,11 @@ function Orders() {
   const getCardStyle = (status) => {
     switch (status) {
       case 'Upcoming':
-        return { backgroundColor: '#1F51FF' };
+        return { backgroundColor: '#F4B400' };
       case 'Completed':
-        return { backgroundColor: '#0f9d58' };
+        return { backgroundColor: '#0F9D58' };
       case 'Refunded':
-        return { backgroundColor: 'red' };
+        return { backgroundColor: '#DB4437' };
       default:
         return {};
     }
@@ -67,9 +81,22 @@ function Orders() {
     return <LoaderComponent />;
   }
 
+  if (!orderslist.length && isLoading) {
+    return <LoaderComponent />;
+  }
+
   return (
-    <Container size="xl" style={{ marginTop: 20 }}>
-      <Text align="start" weight={700} style={{ fontSize: 30, marginBottom: 20 }} color="deepBlue" fw={500} size="xl">
+    <Container size="xl" style={{ marginTop: '70px' }}>
+      <Box style={{ marginTop: '70px' }} />
+      <Navbar />
+      <Text
+        align="start"
+        weight={700}
+        style={{ fontSize: 30, marginBottom: 20 }}
+        c="deepBlue"
+        fw={500}
+        size="xl"
+      >
         Orders
       </Text>
       <Group position="apart" style={{ marginBottom: 20 }}>
@@ -89,22 +116,27 @@ function Orders() {
       <Grid>
         {filteredOrders.map((order, i) => (
           <Grid.Col span={4} key={i}>
-            <Card shadow="sm" padding="lg" radius="md" withBorder style={{ ...getCardStyle(order.order_status), height: '100%' }}>
+            <Card shadow="sm" padding="lg" radius="md" withBorder style={{ ...getCardStyle(order.order_status), height: '100%' }}>              
               <Group position="apart">
-                <Text weight={500} size="lg" style={{ color: 'white' }}>Order {order.order_id}</Text>
-                {filter === 'Upcoming' && (
-                  <Anchor component={Link} to={`/editorders/${order.order_id}`} style={{ textDecoration: 'none' }}>
-                    <Button size="xs" color="white" variant="outline">
-                      <CiEdit />
-                    </Button>
-                  </Anchor>
-                )}
-                <Anchor component={Link} to={`/orderdetails/${order.order_id}`} style={{ textDecoration: 'none' }}>
+              <Text weight={500} size="lg" style={{ color: 'white' }}>Order {order.order_id}</Text>
+              {filter === 'Upcoming' && (
+                <Anchor component={Link} to={`/editorders/${order.order_id}`} style={{ textDecoration: 'none' }}>
                   <Button size="xs" color="white" variant="outline">
-                    <FaRegEye />
+                <Anchor component={Link} to={`/editorders/${order.order_id}`} style={{ textDecoration: 'none' }}>
+                  <Button size="xs" color="white" variant="outline">
+                    <CiEdit />
                   </Button>
                 </Anchor>
-              </Group>
+                  </Button>
+                </Anchor>
+              )}
+              <Anchor component={Link} to={`/orderdetails/${order.order_id}`} style={{ textDecoration: 'none' }}>
+                <Button size="xs" color="white" variant="outline">
+                  <FaRegEye />
+                </Button>
+              </Anchor>
+            </Group>
+=
               <Text mt="sm" style={{ color: 'white' }}>Course Title: {order.Course.course_name}</Text>
               <Text style={{ color: 'white' }}>Status: {order.order_status}</Text>
               <Text style={{ color: 'white' }}>Date: {dayjs(order.order_date).format(DATE_FORMAT)}</Text>

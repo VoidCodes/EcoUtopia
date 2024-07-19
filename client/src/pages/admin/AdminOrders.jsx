@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import http from '../http';
-import global from '../global';
+import https from '../../http';
+import global from '../../global';
 import dayjs from 'dayjs';
 import { Container, Text, Table, Flex, Loader } from '@mantine/core';
 
@@ -17,7 +17,7 @@ function AdminOrders() {
   }, []);
 
   useEffect(() => {
-    http.get('/orders').then((res) => {
+    https.get('/orders').then((res) => {
       setOrdersList(res.data);
     });
   }, []);

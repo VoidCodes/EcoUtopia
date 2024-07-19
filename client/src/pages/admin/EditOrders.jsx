@@ -1,8 +1,9 @@
+import https from '../../http'
+import dayjs from 'dayjs'
+import global from '../../global'
+import LoaderComponent from '../../components/Loader'
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import http from '../http';
-import dayjs from 'dayjs';
-import global from '../global';
 import {
   Container,
   Card,
@@ -12,7 +13,6 @@ import {
   Group,
 } from '@mantine/core';
 import { TiArrowBack } from "react-icons/ti";
-import LoaderComponent from '../components/Loader.jsx';
 
 function EditOrders() {
   const { orderId } = useParams();
@@ -31,14 +31,14 @@ function EditOrders() {
 
   useEffect(() => {
     if (orderId) {
-      http.get(`/orders/${orderId}`).then((res) => {
+      https.get(`/orders/${orderId}`).then((res) => {
         setOrder(res.data);
       });
     }
   }, [orderId]);
 
   const handleRefund = () => {
-    http.put(`/orders/${orderId}`).then((res) => {
+    https.put(`/orders/${orderId}`).then((res) => {
       setOrder(res.data);
       setIsModalOpen(false); // Close the modal
       navigate('/orders'); // Navigate back to the orders page
@@ -59,7 +59,7 @@ function EditOrders() {
           align="start"
           weight={700}
           style={{ fontSize: 30 }}
-          color="deepBlue"
+          c="deepBlue"
           fw={500}
           size="xl"
         >
@@ -68,29 +68,29 @@ function EditOrders() {
       </Group>
 
       <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Text size="lg" weight={500}>
-          <strong>Course Title:</strong> {order.Course.course_name}
+        <Text size="lg" fw={700}>
+          Course Title: <Text component='span'>{order.Course.course_name}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Order Status:</strong> {order.order_status}
+        <Text size="lg" fw={700}>
+          Order Status: <Text component='span'>{order.order_status}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Order Date:</strong> {dayjs(order.order_date).format(global.datetimeFormat)}
+        <Text size="lg" fw={700}>
+          Order Date: <Text component='span'>{dayjs(order.order_date).format(global.datetimeFormat)}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Instructor:</strong> {order.Course.course_instructor}
+        <Text size="lg" fw={700}>
+          Instructor: <Text component='span'>{order.Course.course_instructor}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Course Description:</strong> {order.Course.course_description}
+        <Text size="lg" fw={700}>
+          Course Description: <Text component='span'>{order.Course.course_description}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Course Date:</strong> {dayjs(order.Course.course_date).format(global.datetimeFormat)}
+        <Text size="lg" fw={700}>
+          Course Date: <Text component='span'>{dayjs(order.Course.course_date).format(global.dateFormat)}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>Start Time:</strong> {order.Course.course_start_time}
+        <Text size="lg" fw={700}>
+          Start Time: <Text component='span'>{order.Course.course_start_time}</Text>
         </Text>
-        <Text size="lg" weight={500}>
-          <strong>End Time:</strong> {order.Course.course_end_time}
+        <Text size="lg" fw={700}>
+          End Time: <Text component='span'>{order.Course.course_end_time}</Text>
         </Text>
         <Button
           variant="outline"

@@ -1,4 +1,6 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Container,
@@ -10,11 +12,10 @@ import {
   Grid,
   TextInput,
 } from "@mantine/core";
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { IconPhoto } from "@tabler/icons-react";
 import LoaderComponent from "../components/Loader.jsx";
+import Navbar from "../components/Navbar.jsx";
 
 function Profile() {
   const { logout, user } = useAuth();
@@ -139,6 +140,7 @@ function Profile() {
 
   return (
     <Container size="md" my={40}>
+      <Navbar />
       <Paper withBorder shadow="md" p={30} radius="md">
         <Grid align="center">
           <Grid.Col span={4} style={{ textAlign: "center" }}>

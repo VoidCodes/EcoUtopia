@@ -8,7 +8,10 @@ router.post("/createCourse", async (req, res) => {
     course_name: yup.string().required("Course name is required"),
     course_description: yup.string().required("Course description is required"),
     course_instructor: yup.string().required("Instructor name is required"),
-    course_price: yup.number().required("Price is required"),
+    course_price: yup.number()
+    .required("Price is required")
+    .min(0, "Price cannot be negative")
+    .typeError("Price must be a number"),
     course_type: yup
       .string()
       .required("Course type is required")
@@ -25,8 +28,8 @@ router.post("/createCourse", async (req, res) => {
       .string() // "HH:MM:SS"
       .required("Course start time is required")
       .matches(
-        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-        "Invalid time format. Please use HH:MM (24-hour format)."
+        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+        "Invalid time format. Please use HH:MM:SS (24-hour format)."
       ),
     course_end_time: yup
       .string()
@@ -44,8 +47,8 @@ router.post("/createCourse", async (req, res) => {
         }
       )
       .matches(
-        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-        "Invalid time format. Please use HH:MM (24-hour format)."
+        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+        "Invalid time format. Please use HH:MM:SS (24-hour format)."
       ), // "HH:MM:SS"
     course_capacity: yup
       .number()
@@ -112,7 +115,10 @@ router.put("/updateCourse/:id", async (req, res) => {
     course_name: yup.string().required("Course name is required"),
     course_description: yup.string().required("Course description is required"),
     course_instructor: yup.string().required("Instructor name is required"),
-    course_price: yup.number().required("Price is required"),
+    course_price: yup.number()
+    .required("Price is required")
+    .min(0, "Price cannot be negative")
+    .typeError("Price must be a number"),
     course_type: yup
       .string()
       .required("Course type is required")
@@ -129,8 +135,8 @@ router.put("/updateCourse/:id", async (req, res) => {
       .string() // "HH:MM:SS"
       .required("Course start time is required")
       .matches(
-        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-        "Invalid time format. Please use HH:MM (24-hour format)."
+        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+        "Invalid time format. Please use HH:MM:SS (24-hour format)."
       ),
     course_end_time: yup
       .string()
@@ -148,8 +154,8 @@ router.put("/updateCourse/:id", async (req, res) => {
         }
       )
       .matches(
-        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-        "Invalid time format. Please use HH:MM (24-hour format)."
+        /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/,
+        "Invalid time format. Please use HH:MM:SS (24-hour format)."
       ), // "HH:MM:SS"
     course_capacity: yup
       .number()
