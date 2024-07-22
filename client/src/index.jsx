@@ -24,7 +24,8 @@ import ResetPasswordEnterCode from './pages/ResetPasswordEnterCode.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/AccountManagement.jsx';
-import AccountActivation from './pages/AccountActivation.jsx'
+import AccountActivation from './pages/AccountActivation.jsx';
+import Reports from '.pages/Reports.jsx';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
@@ -32,6 +33,7 @@ import EditCourse from './pages/admin/EditCourse.jsx';
 import AdminRewards from './pages/admin/AdminRewards.jsx';
 import EditReward from './pages/admin/EditReward.jsx';
 import CreateReward from './pages/admin/CreateReward.jsx';
+import AdminReports from './pages/admin/AdminReports.jsx';
 
 import {
   BrowserRouter,
@@ -112,6 +114,7 @@ function Main() {
         <Route path="/change-password/:id" element={<ChangePassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/posts" element={<Posts />} />
+        <Route path="/reports" element={<Reports />} />
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
@@ -121,6 +124,7 @@ function Main() {
         <Route path="/admin/rewards" element={<AdminRewards />} />
         <Route path="/admin/edit-reward/:rewardId" element={<EditReward />} />
         <Route path="/admin/create-reward" element={<CreateReward />} />
+        <Route path="/admin/reports" element={<AdminReports />} />
       </Routes>
     </>
   )

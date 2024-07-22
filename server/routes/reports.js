@@ -1,49 +1,52 @@
-const express = require("express");
-const yup = require("yup");
-const { Reports, Sequelize } = require("../models");
+const express = require('express');
 const router = express.Router();
+const { Feedback } = require('../models');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
-router.post("/createReport", async (req, res) => {
-    const schema = yup.object().shape({
-        userEmail: yup.string().email().required("Email is required"),
-        question1: yup.number()
-            .required("Question 1 is required")
-            .integer("Question 1 must be a whole number")
-            .typeError("Question 1 must be a number")
-            .min(1, "Question 1 must be at least 1")
-            .max(10, "Question 1 must be at most 10"),
-        question2: yup.number()
-            .required("Question 2 is required")
-            .integer("Question 2 must be a whole number")
-            .typeError("Question 2 must be a number")
-            .min(1, "Question 2 must be at least 1")
-            .max(10, "Question 2 must be at most 10"),
-        longAnswer: yup.string().required("Long answer is required"),
-        problemsEncountered: yup.string().notRequired(),
-        screenshot: yup.string().notRequired(),
-    });
-    try {
-        const {
-            userEmail,
-            question1,
-            question2,
-            longAnswer,
-            problemsEncountered,
-            screenshot,
-        } = await schema.validate(req.body, { abortEarly: false });
-        const report = await Reports.create({
-            userEmail,
-            question1,
-            question2,
-            longAnswer,
-            problemsEncountered,
-            screenshot,
-        });
-        res.status(201).json(report);
-    } catch (error) {
-        if (error instanceof Sequelize.ValidationError) {
-            return res.status(400).json({ error: error.errors });
-        }
-        res.status(400).json({ error: error.errors });
+router.post('/', upload.single('screenshot'), async (req, res) => {
+  try {
+    const { userEmail, question1, question2, longAnswer, problemsEncountered } = req.body;
+    const question1Value = parseFloat(question1);
+    const question2Value = parseFloat(question2);
+
+    if (question1Value < 0 || question1Value > 10 || (question1Value * 2) % 1 !== 0) {
+      return res.status(400).json({ error: 'Question 1 must be between 0 and 10, in increments of 0.5' });
     }
+    if (question2Value < 0 || question2Value > 10 || (question2Value * 2) % 1 !== 0) {
+      return res.status(400).json({ error: 'Question 2 must be between 0 and 10, in increments of 0.5' });
+    }
+
+    const screenshot = req.file ? `/uploads/${req.file.filename}` : null;
+    const feedback = await Feedback.create({ userEmail, question1: question1Value, question2: question2Value, longAnswer, problemsEncountered, screenshot });
+    res.status(201).json(feedback);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
+
+router.get('/', async (req, res) => {
+  try {
+    const feedbacks = await Feedback.findAll();
+    res.status(200).json(feedbacks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const feedback = await Feedback.findByPk(req.params.id);
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+    feedback.status = status;
+    await feedback.save();
+    res.status(200).json(feedback);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
