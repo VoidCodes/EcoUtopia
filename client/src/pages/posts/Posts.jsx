@@ -52,7 +52,7 @@ const Posts = () => {
     const handleDelete = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.delete(`/posts/posts/${selectedPostId}`, {
+            const response = await axios.delete(`/posts/${selectedPostId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

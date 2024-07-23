@@ -32,6 +32,7 @@ import AdminOrders from './pages/AdminOrders';
 import Success from './pages/Success.jsx';
 import Posts from './pages/posts/Posts';
 import CreatePost from './pages/posts/CreatePost.jsx';
+import EditPost from './pages/EditPost.jsx';
 
 import {
   BrowserRouter,
@@ -106,6 +107,8 @@ function Main() {
         <Route path="/success" element={<Success />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/createPost" element = {<CreatePost />} />
+        <Route path="/edit/:id" element={<EditPost />} />
+
       </Routes>
     </>
   )
