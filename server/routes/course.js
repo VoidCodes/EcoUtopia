@@ -1,7 +1,41 @@
 const express = require("express");
 const yup = require("yup");
 const { Course, Sequelize } = require("../models");
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const fileparser = require("../middleware/fileparser");
 const router = express.Router();
+
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const region = process.env.S3_REGION;
+const Bucket = process.env.S3_BUCKET;
+
+const s3Client = new S3Client({
+  region,
+  credentials: {
+    accessKeyId,
+    secretAccessKey
+  }
+});
+
+router.get('/get-signed-url', async (req, res) => {
+  try {
+    const { fileName, fileType } = req.query;
+
+    const command = new PutObjectCommand({
+      Bucket,
+      Key: fileName,
+      ContentType: fileType
+    });
+
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    
+    res.json({ signedUrl });
+  } catch (error) {
+    res.status(500).json({ error: 'Error generating signed URL' });
+  }
+});
 
 router.post("/createCourse", async (req, res) => {
   const schema = yup.object().shape({
@@ -162,12 +196,19 @@ router.put("/updateCourse/:id", async (req, res) => {
       .required("Course capacity is required")
       .integer("Capacity must be a whole number")
       .min(1, "Capacity must be at least 1"),
+    course_img: yup
+      .string()
+      .url("Image URL must be a valid URL")
+      .nullable(),
     });
   try {
     const course = await Course.findByPk(req.params.id);
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
+
+    const s3Url = await fileparser(req);
+    const course_img = s3Data.Location;
     const {
       course_name,
       course_description,
@@ -176,9 +217,9 @@ router.put("/updateCourse/:id", async (req, res) => {
       course_type,
       course_date,
       course_start_time,
-      course_end_time,
+      course_end_time,     
       course_capacity,
-    } = await schema.validate(req.body, { abortEarly: false });
+    } = await schema.validate(...req.body, course_img, { abortEarly: false });
     await course.update({
       course_name,
       course_description,
@@ -189,6 +230,7 @@ router.put("/updateCourse/:id", async (req, res) => {
       course_start_time,
       course_end_time,
       course_capacity,
+      course_img,
     });
     res.json(course);
   }
