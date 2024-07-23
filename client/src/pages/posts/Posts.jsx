@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import LoaderComponent from '../components/Loader';
-import Navbar from '../components/Navbar';
+import LoaderComponent from '../../components/Loader';
+import Navbar from '../../components/Navbar';
 import { Card, Button, Text, Group, Image, Stack, Container, Modal } from '@mantine/core';
 
 const Posts = () => {
