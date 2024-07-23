@@ -63,7 +63,7 @@ function AccountManagement() {
 
   useEffect(() => {
     fetchUsers();
-  }, [user]);
+  }, [user, fetchUsers]);
 
   useEffect(() => {
     applyFilters();
