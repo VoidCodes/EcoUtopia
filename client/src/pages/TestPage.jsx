@@ -1,4 +1,4 @@
-import { Container, Button, HoverCard, Text, Group, FileInput } from "@mantine/core"
+import { Container, Button, HoverCard, Text, Group } from "@mantine/core"
 import { useEffect } from "react"
 
 function TestPage() {
