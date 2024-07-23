@@ -8,6 +8,7 @@ import {
     Box,
     ActionIcon,
     TextInput,
+    FileInput,
     rem,
     Textarea,
     NumberInput,
@@ -40,7 +41,8 @@ function EditCourse() {
         course_date: '',
         course_start_time: '',
         course_end_time: '',
-        course_capacity: ''
+        course_capacity: '',
+        course_img: ''
       });
 
     const ref = useRef(null);
@@ -61,6 +63,8 @@ function EditCourse() {
         if (!formData.course_date) errors.course_date = "Course date is required";
         if (!formData.course_start_time) errors.course_start_time = "Course start time is required";
         if (!formData.course_end_time) errors.course_end_time = "Course end time is required";
+        if (!formData.course_capacity) errors.course_capacity = "Course capacity is required";
+        if (!formData.course_img) errors.course_img = "Course image is required";
         return errors;
     };
     const handleSubmit = async () => {
@@ -77,6 +81,9 @@ function EditCourse() {
                 course_date: new Date(formData.course_date).toISOString(),
                 course_start_time: formData.course_start_time,
                 course_end_time: formData.course_end_time,
+                course_capacity: parseInt(formData.course_capacity),
+                course_price: parseFloat(formData.course_price),
+                course_img: formData.course_img
             };
             console.log(`Formatted data: ${JSON.stringify(formattedData)}`);
             const response = await axios.put(`http://localhost:3001/courses/updateCourse/${courseId}`, formattedData);
@@ -120,7 +127,8 @@ function EditCourse() {
                     course_date: fetchedCourse.course_date,
                     course_start_time: fetchedCourse.course_start_time,
                     course_end_time: fetchedCourse.course_end_time,
-                    course_capacity: fetchedCourse.course_capacity
+                    course_capacity: fetchedCourse.course_capacity,
+                    course_img: fetchedCourse.course_img
                 })
                 setLoading(false)
             } catch (error) {
@@ -247,6 +255,21 @@ function EditCourse() {
                         required
                         error={formErrors.course_capacity}
                     />
+                    <FileInput
+                        label="Course Image"
+                        placeholder="Choose course image"
+                        accept="image/*"
+                        required
+                        error={formErrors.course_img}
+                        onChange={(files) => {
+                            const file = files[0];
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                setFormData({ ...formData, course_img: e.target.result });
+                            };
+                            reader.readAsDataURL(file);
+                        }}
+                     />
                     <Box style={{ marginTop: 20 }} />
                     <Group position="right" style={{ marginTop: 20 }}>
                         <Button
