@@ -30,6 +30,7 @@ const parsefile = async (req) => {
         })
 
         form.on('fileBegin', (formName, file) => {
+            const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Generate timestamp
 
             file.open = async function () {
                 this._writeStream = new Transform({
@@ -55,7 +56,9 @@ const parsefile = async (req) => {
                         ACL: 'public-read',
                         Bucket,
                         //Key: `${Date.now().toString()}-${this.originalFilename}`,
-                        Key: `test-${this.originalFilename}`,
+                        Key: `eco-${this.originalFilename}`,
+                        //Key: `${crypto.randomUUID()}-${this.originalFilename}`,
+                        //Key: `${timestamp}-${this.originalFilename}`,
                         Body: this._writeStream
                     },
                     tags: [], // optional tags
