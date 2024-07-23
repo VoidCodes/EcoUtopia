@@ -1,12 +1,12 @@
-import http from '../http';
-import global from '../global';
+import http from '../../http.js';
+import global from '../../global.js';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CiEdit } from 'react-icons/ci';
 import { FaRegEye } from "react-icons/fa6";
-import LoaderComponent from '../components/Loader.jsx';
-import Navbar from '../components/Navbar.jsx'
+import LoaderComponent from '../../components/Loader.jsx';
+import Navbar from '../../components/Navbar.jsx'
 import {
   Container,
   Grid,

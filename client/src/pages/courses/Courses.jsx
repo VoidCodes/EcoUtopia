@@ -1,6 +1,6 @@
 import axios from "axios";
 import dayjs from "dayjs";
-import Navbar from "../components/Navbar.jsx";
+import Navbar from "../../components/Navbar.jsx";
 import { useState, useEffect } from "react";
 import {
   Container,
