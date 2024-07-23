@@ -138,6 +138,7 @@ function AdminCourses() {
     <Container size="xl">
         <Box padding="xl" style={{marginTop: '30px'}} />
         <Title order={1}>Manage Courses</Title>
+        {/*<Button color="blue" variant="outline">Test Button</Button> */}
         <Box padding="xl" style={{marginTop: '70px'}} />
         <Flex justify='space-between'>
             <Box>
