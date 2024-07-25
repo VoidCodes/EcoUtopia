@@ -8,6 +8,7 @@ function TestPage() {
   return (
     <Container size={"xl"}>
       <h1>Test Page</h1>
+      <h2>I feel so sigma!</h2>
       <p>This is a test page.</p>
       <Button>Click me</Button>
       <HoverCard shadow="md">

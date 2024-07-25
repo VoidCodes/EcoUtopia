@@ -148,8 +148,8 @@ function AdminRewards() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.currentTarget.value)}
             />
-            {/* <Button color="blue">Search</Button>
-            <Button color="gray">Filter</Button> */}
+            <Button color="blue">Search</Button>
+            <Button color="gray">Filter</Button>
             <Text c="dimmed">{filteredRewards.length} rewards found</Text>
           </Flex>
         </Box>
