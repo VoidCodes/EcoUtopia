@@ -13,6 +13,8 @@ import {
   Box,
   LoadingOverlay,
   Modal,
+  TextInput,
+  Alert
  } from "@mantine/core";
 import { useState, useEffect } from "react";
 
@@ -21,7 +23,10 @@ function ViewRewards() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Assume false initially
+  const [alertMessage, setAlertMessage] = useState("");
+
   useEffect(() => {
     const fetchRewards = async () => {
       try {
@@ -38,6 +43,18 @@ function ViewRewards() {
     fetchRewards();
     document.title = "Rewards - EcoUtopia";
   }, []);
+
+  const handleRedeemClick = () => {
+    if (!isLoggedIn) {
+      setAlertMessage("You can only redeem if you are logged in!");
+      return;
+    }
+    open();
+  };
+
+  const filteredRewards = rewards.filter(reward =>
+    reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
@@ -74,8 +91,19 @@ function ViewRewards() {
       >
         Check out our cool rewards!
       </Text>
+      <TextInput
+        placeholder="Search rewards"
+        value={searchTerm}
+        onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        style={{ marginBottom: 20 }}
+      />
+      {alertMessage && (
+        <Alert title="Notice" color="red" onClose={() => setAlertMessage("")}>
+          {alertMessage}
+        </Alert>
+      )}
       <Grid>
-        {rewards.map((reward) => (
+        {filteredRewards.map((reward) => (
           <Card
             key={reward.reward_id}
             shadow="xs"
@@ -85,7 +113,7 @@ function ViewRewards() {
               <Image
                 src={null}
                 fallbackSrc="https://placehold.co/600x400?text=Placeholder"
-                alt="aa"
+                alt="Reward Image"
                 h={200}
               />
             </Paper>
@@ -101,7 +129,7 @@ function ViewRewards() {
                 color="deepBlue"
                 variant="filled"
                 size="sm"
-                onClick={open}
+                onClick={handleRedeemClick}
                 style={{ margin: 10 }}
               >
                 Redeem
@@ -111,7 +139,7 @@ function ViewRewards() {
         ))}
       </Grid>
     </Container>
-  )
+  );
 }
 
 export default ViewRewards;
