@@ -18,6 +18,7 @@ import {
   LoadingOverlay,
   rem,
   Image,
+  Select,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil, IconTrash, IconDots } from "@tabler/icons-react";
@@ -30,6 +31,10 @@ function AdminRewards() {
   const [rewardToDelete, setRewardToDelete] = useState(null);
   const [rewardToView, setRewardToView] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState({
+    sortByPoints: "",
+    status: "",
+  });
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -63,15 +68,47 @@ function AdminRewards() {
     }
   };
 
-  const filteredRewards = rewards.filter((reward) =>
-    reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearch = () => {
+    // This function filters rewards based on the search term
+    setRewards(rewards.filter(reward =>
+      reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
+    ));
+  };
+
+  const handleFilter = () => {
+    let filteredRewards = [...rewards];
+
+    if (filter.sortByPoints) {
+      filteredRewards = filteredRewards.sort((a, b) => {
+        if (filter.sortByPoints === "lowToHigh") {
+          return a.reward_points - b.reward_points;
+        } else {
+          return b.reward_points - a.reward_points;
+        }
+      });
+    }
+
+    if (filter.status) {
+      filteredRewards = filteredRewards.filter(
+        (reward) => reward.status === filter.status
+      );
+    }
+
+    setRewards(filteredRewards);
+  };
+
+  const handleResetFilters = () => {
+    setFilter({ sortByPoints: "", status: "" });
+    setSearchTerm("");
+    // Fetch rewards again to reset the filtered rewards
+    fetchRewards();
+  };
 
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
   if (rewards.length === 0) return <Text align="center">No rewards found</Text>;
 
-  const rows = filteredRewards.map((reward) => (
+  const rows = rewards.map((reward) => (
     <Table.Tr key={reward.reward_id}>
       <Table.Td>
         <Group gap="sm">
@@ -135,6 +172,7 @@ function AdminRewards() {
       </Table.Td>
     </Table.Tr>
   ));
+
   return (
     <Container size="xl">
       <Box padding="xl" style={{ marginTop: "30px" }} />
@@ -148,9 +186,34 @@ function AdminRewards() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.currentTarget.value)}
             />
-            <Button color="blue">Search</Button>
-            <Button color="gray">Filter</Button>
-            <Text c="dimmed">{filteredRewards.length} rewards found</Text>
+            <Button color="blue" onClick={handleSearch}>
+              Search
+            </Button>
+            <Select
+              placeholder="Sort by points"
+              data={[
+                { value: "lowToHigh", label: "Low to High" },
+                { value: "highToLow", label: "High to Low" },
+              ]}
+              value={filter.sortByPoints}
+              onChange={(value) => setFilter({ ...filter, sortByPoints: value })}
+            />
+            <Select
+              placeholder="Filter by status"
+              data={[
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              value={filter.status}
+              onChange={(value) => setFilter({ ...filter, status: value })}
+            />
+            <Button color="gray" onClick={handleFilter}>
+              Filter
+            </Button>
+            <Button color="red" onClick={handleResetFilters}>
+              Reset Filters
+            </Button>
+            <Text c="dimmed">{rewards.length} rewards found</Text>
           </Flex>
         </Box>
         <Anchor href="/admin/create-reward">
