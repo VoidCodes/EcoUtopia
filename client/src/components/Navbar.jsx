@@ -41,11 +41,13 @@ function Navbar() {
                 Orders
               </Text>
             </Anchor>
+            {user && (
             <Anchor href="/posts" style={{ textDecoration: "none" }}>
               <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
                 Posts
               </Text>
             </Anchor>
+            )}
           </Flex>
           <Flex align="center">
             {!user && location.pathname !== '/login' && (
