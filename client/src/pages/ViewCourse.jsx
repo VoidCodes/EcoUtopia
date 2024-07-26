@@ -45,7 +45,7 @@ function ViewCourse() {
   if (error) {
     return (
       <Container size="xl">
-        <Text color="red" align="center" size="xl" style={{ marginTop: 20 }}>
+        <Text c="red" align="center" size="xl" style={{ marginTop: 20 }}>
           {error.message}
         </Text>
       </Container>
@@ -71,7 +71,7 @@ function ViewCourse() {
         <Grid>
           <Grid.Col span={6}>
             <Image
-              src={course.image}
+              src={course.course_image_url}
               alt={course.course_name}
               fallbackSrc="https://placehold.co/600x400?text=Placeholder"
               height={300}
