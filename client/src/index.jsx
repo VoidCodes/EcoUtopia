@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext.jsx';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+//import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 // Pages and components
 import App from './pages/App.jsx';
@@ -18,11 +18,12 @@ import ResetPasswordEnterEmail from './pages/ResetPasswordEnterEmail.jsx';
 import ResetPasswordEnterCode from './pages/ResetPasswordEnterCode.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
-import AccountManagement from './pages/AccountManagement.jsx';
+import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
 import Orders from './pages/Orders';
 import EditOrders from './pages/EditOrders';
 import OrderDetails from './pages/OrderDetails';
+import AdminCourses from './pages/admin/courses/AdminCourses';
 import AdminOrders from './pages/AdminOrders';
 import Posts from './pages/Posts';
 import CreatePost from './pages/CreatePost.jsx';
@@ -93,6 +94,7 @@ function Main() {
         <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/createPost" element = {<CreatePost />} />
       </Routes>
