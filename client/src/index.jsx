@@ -25,7 +25,7 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx';
-import Reports from '.pages/Reports.jsx';
+import Reports from './pages/Reports.jsx';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCourses from './pages/admin/AdminCourses.jsx';
 import CreateCourse from './pages/admin/CreateCourse.jsx';
@@ -34,7 +34,6 @@ import AdminRewards from './pages/admin/AdminRewards.jsx';
 import EditReward from './pages/admin/EditReward.jsx';
 import CreateReward from './pages/admin/CreateReward.jsx';
 import AdminReports from './pages/admin/AdminReports.jsx';
-
 import {
   BrowserRouter,
   Routes,
