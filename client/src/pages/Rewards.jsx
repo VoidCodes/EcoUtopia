@@ -14,7 +14,8 @@ import {
   LoadingOverlay,
   Modal,
   TextInput,
-  Alert
+  Alert,
+  Select
  } from "@mantine/core";
 import { useState, useEffect } from "react";
 
@@ -26,6 +27,7 @@ function ViewRewards() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Assume false initially
   const [alertMessage, setAlertMessage] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc"); // 'asc' for ascending, 'desc' for descending
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -52,13 +54,24 @@ function ViewRewards() {
     open();
   };
 
-  const filteredRewards = rewards.filter(reward =>
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+  };
+
+  const sortedRewards = [...rewards].sort((a, b) => {
+    if (sortOrder === "asc") {
+      return a.reward_points - b.reward_points;
+    }
+    return b.reward_points - a.reward_points;
+  });
+
+  const filteredRewards = sortedRewards.filter(reward =>
     reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
-  if (rewards.length === 0) return <Text align="center">No courses found</Text>;
+  if (rewards.length === 0) return <Text align="center">No rewards found</Text>;
 
   return (
     <Container size="xl" style={{ marginTop: 20 }}>
@@ -95,6 +108,16 @@ function ViewRewards() {
         placeholder="Search rewards"
         value={searchTerm}
         onChange={(event) => setSearchTerm(event.currentTarget.value)}
+        style={{ marginBottom: 20 }}
+      />
+      <Select
+        value={sortOrder}
+        onChange={handleSortChange}
+        data={[
+          { value: 'asc', label: 'Sort by Points (Ascending)' },
+          { value: 'desc', label: 'Sort by Points (Descending)' },
+        ]}
+        placeholder="Sort by"
         style={{ marginBottom: 20 }}
       />
       {alertMessage && (
