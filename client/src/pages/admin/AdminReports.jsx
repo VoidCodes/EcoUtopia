@@ -15,29 +15,24 @@ import {
   Title,
   Modal,
   LoadingOverlay,
-  rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconPencil,
-  IconTrash,
-  IconDots,
-} from "@tabler/icons-react";
+import { IconPencil, IconTrash, IconDots } from "@tabler/icons-react";
 import AdminNav from "../../components/AdminNav";
+import dayjs from "dayjs";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AdminReports() {
-  // create state to hold reports
+  const location = useLocation();
+  const navigate = useNavigate();
   const [reports, setReports] = useState([]);
-  // create state to hold loading status
   const [loading, setLoading] = useState(true);
-  // create state to hold error status
   const [error, setError] = useState(null);
-  // create state to hold modal status
   const [opened, { open, close }] = useDisclosure(false);
-  // create state to hold selected report details
   const [selectedReport, setSelectedReport] = useState(null);
+  const [filter, setFilter] = useState(location.state?.filter || "");
+  const [sortCriteria, setSortCriteria] = useState(location.state?.sortCriteria || "");
 
-  // create function to fetch reports and add validation such that pending reports are shown first
   const fetchReports = async () => {
     try {
       const response = await axios.get("/api/feedback");
@@ -49,7 +44,6 @@ function AdminReports() {
     }
   };
 
-  // create function to handle report status change
   const handleStatusChange = async (id, status) => {
     try {
       await axios.patch(`/api/feedback/${id}`, { status });
@@ -59,7 +53,6 @@ function AdminReports() {
     }
   };
 
-  // create function to handle report deletion
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/api/feedback/${id}`);
@@ -69,25 +62,89 @@ function AdminReports() {
     }
   };
 
-  // create function to handle modal close
   const handleClose = () => {
     close();
     setSelectedReport(null);
   };
 
-  // create function to handle modal open
   const handleOpen = (report) => {
     setSelectedReport(report);
     open();
   };
 
-  // create function to handle modal submit
   const handleSubmit = (id, status) => {
     handleStatusChange(id, status);
     handleClose();
   };
 
-  // create effect to fetch reports
+  const filterReports = (reports) => {
+    let filteredReports = reports;
+
+    if (filter) {
+      switch (filter) {
+        case "completed":
+          filteredReports = reports.filter((report) => report.status === "approved");
+          break;
+        case "pending":
+          filteredReports = reports.filter((report) => report.status === "pending");
+          break;
+        default:
+          break;
+      }
+    }
+
+    return filteredReports;
+  };
+
+  const sortReports = (reports) => {
+    let sortedReports = [...reports];
+
+    if (sortCriteria) {
+      switch (sortCriteria) {
+        case "alphabetical_az":
+          sortedReports.sort((a, b) => a.userEmail.localeCompare(b.userEmail));
+          break;
+        case "alphabetical_za":
+          sortedReports.sort((a, b) => b.userEmail.localeCompare(a.userEmail));
+          break;
+        case "latest":
+          sortedReports.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case "oldest":
+          sortedReports.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case "shortest_time":
+          sortedReports.sort((a, b) => a.timeTaken - b.timeTaken);
+          break;
+        case "longest_time":
+          sortedReports.sort((a, b) => b.timeTaken - a.timeTaken);
+          break;
+        default:
+          break;
+      }
+    }
+
+    return sortedReports;
+  };
+
+  const aggregateReportsByDay = (reports) => {
+    const aggregatedData = {};
+
+    reports.forEach((report) => {
+      const date = dayjs(report.date).format("YYYY-MM-DD");
+      if (!aggregatedData[date]) {
+        aggregatedData[date] = 1;
+      } else {
+        aggregatedData[date]++;
+      }
+    });
+
+    return Object.entries(aggregatedData).map(([date, count]) => ({
+      date,
+      count,
+    }));
+  };
+
   useEffect(() => {
     fetchReports();
   }, []);
@@ -96,10 +153,19 @@ function AdminReports() {
   if (error) return <Text align="center">Error: {error.message}</Text>;
   if (reports.length === 0) return <Text align="center">No reports found</Text>;
 
+  const filteredReports = filterReports(reports);
+  const sortedReports = sortReports(filteredReports);
+  const aggregatedReports = aggregateReportsByDay(reports);
+
   return (
     <Container size="xl" style={{ marginTop: 20 }}>
       <AdminNav />
       <Title order={2} style={{ marginBottom: 20 }}>Admin Reports</Title>
+
+      <Button onClick={() => navigate("/admin/reports/filters")} style={{ marginBottom: 20 }}>
+        Set Filters
+      </Button>
+
       <Table>
         <thead>
           <tr>
@@ -111,7 +177,7 @@ function AdminReports() {
           </tr>
         </thead>
         <tbody>
-          {reports.map((report) => (
+          {sortedReports.map((report) => (
             <tr key={report.id}>
               <td>{report.userEmail}</td>
               <td>{report.question1}</td>
@@ -138,6 +204,24 @@ function AdminReports() {
                   </Menu>
                 </Group>
               </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <Title order={3} style={{ marginTop: 20, marginBottom: 10 }}>Reports Summary</Title>
+      <Table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Number of Reports</th>
+          </tr>
+        </thead>
+        <tbody>
+          {aggregatedReports.map(({ date, count }) => (
+            <tr key={date}>
+              <td>{date}</td>
+              <td>{count}</td>
             </tr>
           ))}
         </tbody>

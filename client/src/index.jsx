@@ -34,6 +34,11 @@ import AdminRewards from './pages/admin/AdminRewards.jsx';
 import EditReward from './pages/admin/EditReward.jsx';
 import CreateReward from './pages/admin/CreateReward.jsx';
 import AdminReports from './pages/admin/AdminReports.jsx';
+import ErrorPage from './pages/ErrorPage.jsx';
+import TicTacToe from './pages/TicTacToe.jsx';
+import MemoryCardGame from './pages/MemoryGame.jsx';
+import SnakeGame from './pages/SnakeGame.jsx';
+import ReportFilterPage from './pages/admin/reports/FilterPage.jsx';
 import {
   BrowserRouter,
   Routes,
@@ -124,6 +129,11 @@ function Main() {
         <Route path="/admin/edit-reward/:rewardId" element={<EditReward />} />
         <Route path="/admin/create-reward" element={<CreateReward />} />
         <Route path="/admin/reports" element={<AdminReports />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/tictactoe" element={<TicTacToe />} />
+        <Route path="/memory" element={<MemoryCardGame />} />
+        <Route path="/snake" element={<SnakeGame />} />
+        <Route path="/admin/reports/filters" element={<ReportFilterPage />} />
       </Routes>
     </>
   )
