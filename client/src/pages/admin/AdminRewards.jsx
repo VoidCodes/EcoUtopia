@@ -26,6 +26,7 @@ import { IconPencil, IconTrash, IconDots } from "@tabler/icons-react";
 function AdminRewards() {
   const [opened, { open, close }] = useDisclosure(false);
   const [rewards, setRewards] = useState([]);
+  const [filteredRewards, setFilteredRewards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rewardToDelete, setRewardToDelete] = useState(null);
@@ -43,6 +44,7 @@ function AdminRewards() {
           "http://localhost:3000/api/rewards/getRewards"
         );
         setRewards(response.data);
+        setFilteredRewards(response.data);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -52,6 +54,55 @@ function AdminRewards() {
     fetchRewards();
     document.title = "Rewards - EcoUtopia";
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [rewards, searchTerm, filter]);
+
+  const applyFilters = () => {
+    let filteredRewards = [...rewards];
+
+    // Search filter
+    if (searchTerm) {
+      filteredRewards = filteredRewards.filter((reward) =>
+        reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sorting
+    if (filter.sortByPoints) {
+      filteredRewards = filteredRewards.sort((a, b) => {
+        if (filter.sortByPoints === "lowToHigh") {
+          return a.reward_points - b.reward_points;
+        } else {
+          return b.reward_points - a.reward_points;
+        }
+      });
+    }
+
+    // Status filter
+    if (filter.status) {
+      filteredRewards = filteredRewards.filter(
+        (reward) => reward.status === filter.status
+      );
+    }
+
+    setFilteredRewards(filteredRewards);
+  };
+
+  const handleSearch = () => {
+    applyFilters();
+  };
+
+  const handleFilter = () => {
+    applyFilters();
+  };
+
+  const handleResetFilters = () => {
+    setFilter({ sortByPoints: "", status: "" });
+    setSearchTerm("");
+    applyFilters(); // Reset and reapply filters
+  };
 
   const deleteReward = async () => {
     try {
@@ -68,47 +119,11 @@ function AdminRewards() {
     }
   };
 
-  const handleSearch = () => {
-    // This function filters rewards based on the search term
-    setRewards(rewards.filter(reward =>
-      reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
-  };
-
-  const handleFilter = () => {
-    let filteredRewards = [...rewards];
-
-    if (filter.sortByPoints) {
-      filteredRewards = filteredRewards.sort((a, b) => {
-        if (filter.sortByPoints === "lowToHigh") {
-          return a.reward_points - b.reward_points;
-        } else {
-          return b.reward_points - a.reward_points;
-        }
-      });
-    }
-
-    if (filter.status) {
-      filteredRewards = filteredRewards.filter(
-        (reward) => reward.status === filter.status
-      );
-    }
-
-    setRewards(filteredRewards);
-  };
-
-  const handleResetFilters = () => {
-    setFilter({ sortByPoints: "", status: "" });
-    setSearchTerm("");
-    // Fetch rewards again to reset the filtered rewards
-    fetchRewards();
-  };
-
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
-  if (rewards.length === 0) return <Text align="center">No rewards found</Text>;
+  if (filteredRewards.length === 0) return <Text align="center">No rewards found</Text>;
 
-  const rows = rewards.map((reward) => (
+  const rows = filteredRewards.map((reward) => (
     <Table.Tr key={reward.reward_id}>
       <Table.Td>
         <Group gap="sm">
@@ -213,7 +228,7 @@ function AdminRewards() {
             <Button color="red" onClick={handleResetFilters}>
               Reset Filters
             </Button>
-            <Text c="dimmed">{rewards.length} rewards found</Text>
+            <Text c="dimmed">{filteredRewards.length} rewards found</Text>
           </Flex>
         </Box>
         <Anchor href="/admin/create-reward">
