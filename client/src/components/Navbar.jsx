@@ -55,11 +55,6 @@ function Navbar() {
                 Orders
               </Text>
             </Anchor>
-            <Anchor href="/reports" style={{ textDecoration: "none" }}>
-              <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
-                Report
-              </Text>
-            </Anchor>
           </Flex>
           <Flex align="center">
             {!user && (
