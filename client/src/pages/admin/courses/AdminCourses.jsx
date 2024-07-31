@@ -137,10 +137,10 @@ function AdminCourses() {
   return (
     <Container size="xl">
         <Box padding="xl" style={{marginTop: '30px'}} />
-        <Title order={1}>Manage Courses</Title>
+        <Title>Manage Courses</Title>
         {/*<Button color="blue" variant="outline">Test Button</Button> */}
         <Box padding="xl" style={{marginTop: '70px'}} />
-        <Flex justify='space-between'>
+        <Flex justify={{ sm: "space-between", md: "space-between" }} direction={{ xs: "column", sm: "row" }}>
             <Box>
                 <Flex gap="md">
                     <TextInput 
