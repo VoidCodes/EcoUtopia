@@ -157,10 +157,9 @@ function ViewRewards() {
           <Card key={reward.reward_id} shadow="xs" style={{ width: 300, margin: 10 }}>
             <Paper padding="md" style={{ position: "relative" }}>
               <Image
-                src={null}
-                fallbackSrc="https://placehold.co/600x400?text=Placeholder"
-                alt="Reward Image"
-                h={200}
+                src={reward.reward_image || "https://placehold.co/600x400?text=Placeholder"}
+                alt={reward.reward_name}
+                height={200}
               />
             </Paper>
             <Text align="center" fw={700} style={{ margin: 10 }}>
