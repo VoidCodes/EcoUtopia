@@ -15,6 +15,7 @@ function Navbar() {
   };
 
   const isProfilePage = user && location.pathname === `/profile/${user.user_id}`;
+  const isStaff = user && user.role === 'STAFF';
 
   return (
     <AppShell header={{ height: 50 }} navbar={{ width: 200, breakpoint: "xl" }}>
@@ -41,6 +42,13 @@ function Navbar() {
                 Orders
               </Text>
             </Anchor>
+            {isStaff && (
+              <Anchor href="/admin/view-courses" style={{ textDecoration: "none" }}>
+                <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
+                  Admin
+                </Text>
+              </Anchor>
+            )}
             {user && (
             <Anchor href="/posts" style={{ textDecoration: "none" }}>
               <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
