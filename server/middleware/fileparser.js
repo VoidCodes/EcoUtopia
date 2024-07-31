@@ -17,18 +17,16 @@ const parsefile = async (req) => {
 
         const form = new Formidable(options);
         
-        form.parse(req, (err, fields, files) => {});
+        form.parse(req, (err, fields, files) => {
+            if (err) {
+                reject(err.message);
+            }
+        });
 
         form.on('error', error => {
             reject(error.message)
         })
         
-        form.on('data', data => {
-            if (data.name === "successUpload") {
-                resolve(data.value);
-            }
-        })
-
         form.on('fileBegin', (formName, file) => {
             const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Generate timestamp
 
@@ -68,7 +66,10 @@ const parsefile = async (req) => {
                 })
                     .done()
                     .then(data => {
+                        //console.log(`Successfully uploaded ${this.originalFilename} to ${Bucket}/${data.Key}`);
                         form.emit('data', { name: "complete", value: data });
+                        console.log(`Successfully uploaded ${this.originalFilename} to ${Bucket}/${data.Key}`);
+                        resolve(data.Location);
                     }).catch((err) => {
                         form.emit('error', err);
                     })
