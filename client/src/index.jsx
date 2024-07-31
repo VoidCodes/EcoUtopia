@@ -6,8 +6,9 @@ import { AuthProvider } from './context/AuthContext.jsx';
 // Pages and components
 import App from './pages/App.jsx';
 import TestPage from './pages/TestPage.jsx';
-import Courses from './pages/Courses.jsx';
-import ViewCourse from './pages/ViewCourse.jsx';
+import TestCreate from './pages/TestCreate.jsx';
+import Courses from './pages/courses/Courses.jsx';
+import ViewCourse from './pages/courses/ViewCourse.jsx';
 import Navbar from './components/Navbar.jsx';
 import Registration from './pages/Registration.jsx';
 import Login from './pages/Login.jsx';
@@ -20,13 +21,15 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
-import Orders from './pages/Orders';
+import Orders from './pages/orders/Orders.jsx';
 import EditOrders from './pages/EditOrders';
-import OrderDetails from './pages/OrderDetails';
+import OrderDetails from './pages/orders/OrderDetails.jsx';
 import AdminCourses from './pages/admin/courses/AdminCourses';
+import CreateCourse from './pages/admin/courses/CreateCourse';
+import EditCourse from './pages/admin/courses/EditCourse.jsx';
 import AdminOrders from './pages/AdminOrders';
-import Posts from './pages/Posts';
-import CreatePost from './pages/CreatePost.jsx';
+import Posts from './pages/posts/Posts.jsx';
+import CreatePost from './pages/posts/CreatePost.jsx';
 
 import {
   BrowserRouter,
@@ -79,6 +82,7 @@ function Main() {
         <Route path="/course/:courseId" element={<ViewCourse />} />
         <Route path="/login" element={<Login />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/testcreate" element={<TestCreate />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile/:paramId" element={<Profile />} />
@@ -95,6 +99,8 @@ function Main() {
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/view-courses" element={<AdminCourses />} />
+        <Route path="/admin/create-course" element={<CreateCourse />} />
+        <Route path="/admin/edit-course/:courseId" element={<EditCourse />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/createPost" element = {<CreatePost />} />
       </Routes>
