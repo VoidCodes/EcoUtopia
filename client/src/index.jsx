@@ -33,6 +33,9 @@ import Success from './pages/Success.jsx';
 import Posts from './pages/posts/Posts';
 import CreatePost from './pages/posts/CreatePost.jsx';
 import EditPost from './pages/EditPost.jsx';
+import PostDetails from './pages/PostDetails';
+import AdminPostsTable from './pages/PostsTable';
+import ImagePage from './pages/ImagePage.jsx';
 
 import {
   BrowserRouter,
@@ -108,6 +111,9 @@ function Main() {
         <Route path="/posts" element={<Posts />} />
         <Route path="/createPost" element = {<CreatePost />} />
         <Route path="/edit/:id" element={<EditPost />} />
+        <Route path="/posts/:id" element={<PostDetails />} />
+        <Route path ="/admin/posts" element={<AdminPostsTable />} />
+        <Route path="/image/:imageUrl" element={<ImagePage />} />
 
       </Routes>
     </>

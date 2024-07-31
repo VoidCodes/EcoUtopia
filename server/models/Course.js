@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(500),
             allowNull: true
         },
+        course_image_url: {
+            type: DataTypes.STRING(500),
+            allowNull: true
+        },
 
     }, {
         tableName: 'courses',
@@ -56,5 +60,5 @@ module.exports = (sequelize, DataTypes) => {
         Course.hasMany(models.Orders, { foreignKey: 'course_id' });
     };
 
-    return Course;
+    return Course;
 }
