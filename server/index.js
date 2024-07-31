@@ -22,15 +22,16 @@ app.get("/", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
-    console.time("Upload Time");
+    //console.time("Upload Time");
     fileparser(req)
         .then((result) => {
-            console.timeEnd("Upload Time - Success");
+            //console.timeEnd("Upload Time - Success");
             res.status(200).json({ message: "Success", result });
+            console.log("WHY ARE YOU NOT LOGGING AAAA");
         })
         .catch((error) => {
-            console.timeEnd("Upload Time - Error");
-            res.status(400).json({ message: "Error uploading file" + error });
+            //console.timeEnd("Upload Time - Error");
+            res.status(400).json({ message: "Error uploading file: " + error });
         });
 });
 
