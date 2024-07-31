@@ -2,12 +2,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import {
   Container,
-  Flex,
+  Select,
   Button,
-  TextInput,
-  Box,
-  Anchor,
-  Table,
   Group,
   Text,
   ActionIcon,
@@ -15,23 +11,24 @@ import {
   Title,
   Modal,
   LoadingOverlay,
+  Table,
+  Box,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil, IconTrash, IconDots } from "@tabler/icons-react";
 import AdminNav from "../../components/AdminNav";
 import dayjs from "dayjs";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function AdminReports() {
-  const location = useLocation();
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedReport, setSelectedReport] = useState(null);
-  const [filter, setFilter] = useState(location.state?.filter || "");
-  const [sortCriteria, setSortCriteria] = useState(location.state?.sortCriteria || "");
+  const [filter, setFilter] = useState("");
+  const [sortCriteria, setSortCriteria] = useState("");
 
   const fetchReports = async () => {
     try {
@@ -162,9 +159,32 @@ function AdminReports() {
       <AdminNav />
       <Title order={2} style={{ marginBottom: 20 }}>Admin Reports</Title>
 
-      <Button onClick={() => navigate("/admin/reports/filters")} style={{ marginBottom: 20 }}>
-        Set Filters
-      </Button>
+      <Group direction="column" spacing="sm" style={{ marginBottom: 20 }}>
+        <Select
+          data={[
+            { value: "", label: "All" },
+            { value: "completed", label: "Completed" },
+            { value: "pending", label: "Pending" },
+          ]}
+          placeholder="Filter by Status"
+          value={filter}
+          onChange={(value) => setFilter(value)}
+        />
+        <Select
+          data={[
+            { value: "alphabetical_az", label: "Alphabetical (A-Z)" },
+            { value: "alphabetical_za", label: "Alphabetical (Z-A)" },
+            { value: "latest", label: "Latest" },
+            { value: "oldest", label: "Oldest" },
+            { value: "shortest_time", label: "Shortest Time Taken" },
+            { value: "longest_time", label: "Longest Time Taken" },
+          ]}
+          placeholder="Sort by"
+          value={sortCriteria}
+          onChange={(value) => setSortCriteria(value)}
+        />
+        <Button onClick={() => {}}>Apply Filters</Button>
+      </Group>
 
       <Table>
         <thead>

@@ -38,7 +38,6 @@ import ErrorPage from './pages/ErrorPage.jsx';
 import TicTacToe from './pages/TicTacToe.jsx';
 import MemoryCardGame from './pages/MemoryGame.jsx';
 import SnakeGame from './pages/SnakeGame.jsx';
-import ReportFilterPage from './pages/admin/reports/FilterPage.jsx';
 import {
   BrowserRouter,
   Routes,
@@ -133,7 +132,6 @@ function Main() {
         <Route path="/tictactoe" element={<TicTacToe />} />
         <Route path="/memory" element={<MemoryCardGame />} />
         <Route path="/snake" element={<SnakeGame />} />
-        <Route path="/admin/reports/filters" element={<ReportFilterPage />} />
       </Routes>
     </>
   )
