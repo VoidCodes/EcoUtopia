@@ -35,9 +35,9 @@ import EditReward from './pages/admin/EditReward.jsx';
 import CreateReward from './pages/admin/CreateReward.jsx';
 import AdminReports from './pages/admin/AdminReports.jsx';
 import ErrorPage from './pages/ErrorPage.jsx';
-import TicTacToe from './pages/TicTacToe.jsx';
-import MemoryCardGame from './pages/MemoryGame.jsx';
-import SnakeGame from './pages/SnakeGame.jsx';
+import TicTacToe from './components/TicTacToe.jsx';
+import MemoryCardGame from './components/MemoryCardGame.jsx';
+import SnakeGame from './components/SnakeGame.jsx';
 import {
   BrowserRouter,
   Routes,
@@ -46,6 +46,7 @@ import {
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import { MantineProvider, createTheme, Box, rem } from '@mantine/core'
+import { TicTac } from 'tabler-icons-react';
 
 const theme = createTheme({
   //primaryColor: 'violet'
@@ -130,8 +131,8 @@ function Main() {
         <Route path="/admin/reports" element={<AdminReports />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/tictactoe" element={<TicTacToe />} />
-        <Route path="/memory" element={<MemoryCardGame />} />
-        <Route path="/snake" element={<SnakeGame />} />
+        <Route path="/memorycardgame" element={<MemoryCardGame />} />
+        <Route path="/snakegame" element={<SnakeGame />} />
       </Routes>
     </>
   )
