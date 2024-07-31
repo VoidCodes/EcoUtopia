@@ -19,6 +19,9 @@ import {
   rem,
   Image,
   Select,
+  MultiSelect,
+  Alert,
+  Pagination,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil, IconTrash, IconDots } from "@tabler/icons-react";
@@ -36,6 +39,15 @@ function AdminRewards() {
     sortByPoints: "",
     status: "",
   });
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [favoriteRewards, setFavoriteRewards] = useState([]);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -57,7 +69,7 @@ function AdminRewards() {
 
   useEffect(() => {
     applyFilters();
-  }, [rewards, searchTerm, filter]);
+  }, [rewards, searchTerm, filter, selectedCategories, selectedTags, showFavorites]);
 
   const applyFilters = () => {
     let filteredRewards = [...rewards];
@@ -87,6 +99,27 @@ function AdminRewards() {
       );
     }
 
+    // Category filter
+    if (selectedCategories.length > 0) {
+      filteredRewards = filteredRewards.filter((reward) =>
+        selectedCategories.includes(reward.category)
+      );
+    }
+
+    // Tag filter
+    if (selectedTags.length > 0) {
+      filteredRewards = filteredRewards.filter((reward) =>
+        selectedTags.some((tag) => reward.tags.includes(tag))
+      );
+    }
+
+    // Favorites filter
+    if (showFavorites) {
+      filteredRewards = filteredRewards.filter((reward) =>
+        favoriteRewards.includes(reward.reward_id)
+      );
+    }
+
     setFilteredRewards(filteredRewards);
   };
 
@@ -101,6 +134,9 @@ function AdminRewards() {
   const handleResetFilters = () => {
     setFilter({ sortByPoints: "", status: "" });
     setSearchTerm("");
+    setSelectedCategories([]);
+    setSelectedTags([]);
+    setShowFavorites(false);
     applyFilters(); // Reset and reapply filters
   };
 
@@ -119,13 +155,61 @@ function AdminRewards() {
     }
   };
 
+  const handleFavoriteToggle = (reward) => {
+    setFavoriteRewards((prevFavorites) =>
+      prevFavorites.includes(reward.reward_id)
+        ? prevFavorites.filter((id) => id !== reward.reward_id)
+        : [...prevFavorites, reward.reward_id]
+    );
+  };
+
+  const handleExportToCSV = () => {
+    const csvContent = [
+      ["Reward Name", "Description", "Points", "Expiration Date"].join(","),
+      ...filteredRewards.map((reward) =>
+        [
+          reward.reward_name,
+          reward.reward_description,
+          reward.reward_points,
+          reward.reward_expiration
+            ? new Date(reward.reward_expiration).toLocaleDateString()
+            : "N/A",
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "rewards.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
+
+  const paginatedRewards = filteredRewards.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   if (loading) return <LoadingOverlay visible />;
   if (error) return <Text align="center">Error: {error.message}</Text>;
   if (filteredRewards.length === 0) return <Text align="center">No rewards found</Text>;
 
-  const rows = filteredRewards.map((reward) => (
-    <Table.Tr key={reward.reward_id}>
-      <Table.Td>
+  const rows = paginatedRewards.map((reward) => (
+    <tr key={reward.reward_id}>
+      <td>
         <Group gap="sm">
           <div>
             <Text fz="sm" fw={500}>
@@ -133,17 +217,17 @@ function AdminRewards() {
             </Text>
           </div>
         </Group>
-      </Table.Td>
-      <Table.Td>
+      </td>
+      <td>
         <Text fz="sm">{reward.reward_description}</Text>
-      </Table.Td>
-      <Table.Td>
+      </td>
+      <td>
         <Text fz="sm">{dayjs(reward.createdAt).format("DD/MM/YYYY")}</Text>
-      </Table.Td>
-      <Table.Td>
+      </td>
+      <td>
         <Text fz="sm">{dayjs(reward.updatedAt).format("DD/MM/YYYY")}</Text>
-      </Table.Td>
-      <Table.Td>
+      </td>
+      <td>
         <Group gap={0} justify="flex-start">
           <Anchor href={`/admin/edit-reward/${reward.reward_id}`}>
             <ActionIcon variant="subtle" color="gray">
@@ -184,8 +268,8 @@ function AdminRewards() {
             </Menu.Dropdown>
           </Menu>
         </Group>
-      </Table.Td>
-    </Table.Tr>
+      </td>
+    </tr>
   ));
 
   return (
@@ -193,7 +277,7 @@ function AdminRewards() {
       <Box padding="xl" style={{ marginTop: "30px" }} />
       <Title order={1}>Manage Rewards</Title>
       <Box padding="xl" style={{ marginTop: "70px" }} />
-      <Flex justify="space-between">
+      <Flex justify="space-between" align="center">
         <Box>
           <Flex gap="md">
             <TextInput
@@ -206,111 +290,85 @@ function AdminRewards() {
             </Button>
             <Select
               placeholder="Sort by points"
-              data={[
-                { value: "lowToHigh", label: "Low to High" },
-                { value: "highToLow", label: "High to Low" },
-              ]}
               value={filter.sortByPoints}
               onChange={(value) => setFilter({ ...filter, sortByPoints: value })}
-            />
+            >
+              <option value="">None</option>
+              <option value="lowToHigh">Points: Low to High</option>
+              <option value="highToLow">Points: High to Low</option>
+            </Select>
             <Select
-              placeholder="Filter by status"
-              data={[
-                { value: "active", label: "Active" },
-                { value: "inactive", label: "Inactive" },
-              ]}
+              placeholder="Status"
               value={filter.status}
               onChange={(value) => setFilter({ ...filter, status: value })}
+            >
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </Select>
+            <MultiSelect
+              placeholder="Filter by categories"
+              data={categories}
+              value={selectedCategories}
+              onChange={setSelectedCategories}
             />
-            <Button color="gray" onClick={handleFilter}>
-              Filter
+            <MultiSelect
+              placeholder="Filter by tags"
+              data={tags}
+              value={selectedTags}
+              onChange={setSelectedTags}
+            />
+            <Button color="teal" onClick={() => setShowFavorites(!showFavorites)}>
+              {showFavorites ? "Show All" : "Show Favorites"}
             </Button>
             <Button color="red" onClick={handleResetFilters}>
               Reset Filters
             </Button>
-            <Text c="dimmed">{filteredRewards.length} rewards found</Text>
+            <Button color="green" onClick={handleExportToCSV}>
+              Export to CSV
+            </Button>
           </Flex>
         </Box>
-        <Anchor href="/admin/create-reward">
-          <Button justify="flex-end" color="blue">
-            Create Reward
-          </Button>
-        </Anchor>
       </Flex>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title={rewardToDelete ? "Delete Reward" : "View Reward"}
-      >
-        {rewardToDelete ? (
-          <>
-            <Title c="red" order={3}>
-              Are you sure you want to delete this reward?
-            </Title>
-            <Box padding="xl" style={{ marginTop: "20px" }} />
-            <Text>This action cannot be undone.</Text>
-            <Box padding="xl" style={{ marginTop: "20px" }} />
-            <Group align="right">
-              <Button color="red" onClick={deleteReward}>
-                Delete
-              </Button>
-              <Button variant="transparent" onClick={close} color="gray">
-                Cancel
-              </Button>
-            </Group>
-          </>
-        ) : (
-          rewardToView && (
-            <>
-              <Text fz="sm" fw={500}>
-                Reward Name: {rewardToView.reward_name}
-              </Text>
-              <Text fz="sm" fw={500}>
-                Description: {rewardToView.reward_description}
-              </Text>
-              <Text fz="sm" fw={500}>
-                Points: {rewardToView.reward_points}
-              </Text>
-              <Text fz="sm" fw={500}>
-                Created At: {dayjs(rewardToView.createdAt).format("DD/MM/YYYY")}
-              </Text>
-              <Text fz="sm" fw={500}>
-                Updated At: {dayjs(rewardToView.updatedAt).format("DD/MM/YYYY")}
-              </Text>
-              {rewardToView.reward_image && (
-                <Box mt="md">
-                  <Text>Image:</Text>
-                  <Image
-                    src={`/uploads/${rewardToView.reward_image}`}
-                    alt="Reward Image"
-                    style={{ maxWidth: "100%", height: "auto" }}
-                  />
-                </Box>
-              )}
-              <Group align="right" mt="md">
-                <Button variant="outline" onClick={close} color="gray">
-                  Close
-                </Button>
-              </Group>
-            </>
-          )
+      <Box padding="xl" style={{ marginTop: "30px" }} />
+      <Table>
+        <thead>
+          <tr>
+            <th>Reward Name</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+      <Box padding="xl" style={{ marginTop: "30px" }} />
+      <Pagination
+        total={Math.ceil(filteredRewards.length / pageSize)}
+        page={currentPage}
+        onChange={handlePageChange}
+        onPerPageChange={handlePageSizeChange}
+        styles={{ controls: { marginTop: rem(10) } }}
+      />
+      <Modal opened={rewardToDelete !== null} onClose={close} title="Confirm Deletion">
+        <Text>Are you sure you want to delete this reward?</Text>
+        <Group position="right" mt="md">
+          <Button color="red" onClick={deleteReward}>Delete</Button>
+          <Button onClick={close}>Cancel</Button>
+        </Group>
+      </Modal>
+      <Modal opened={rewardToView !== null} onClose={close} title="View Reward">
+        {rewardToView && (
+          <div>
+            <Text><strong>Name:</strong> {rewardToView.reward_name}</Text>
+            <Text><strong>Description:</strong> {rewardToView.reward_description}</Text>
+            <Text><strong>Points:</strong> {rewardToView.reward_points}</Text>
+            <Text><strong>Expiration Date:</strong> {rewardToView.reward_expiration ? dayjs(rewardToView.reward_expiration).format("DD/MM/YYYY") : "N/A"}</Text>
+            <Text><strong>Status:</strong> {rewardToView.status}</Text>
+          </div>
         )}
       </Modal>
-      <Table.ScrollContainer minWidth={800}>
-        <Table verticalSpacing="md">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Reward Name</Table.Th>
-              <Table.Th>Description</Table.Th>
-              <Table.Th>Created At</Table.Th>
-              <Table.Th>Updated At</Table.Th>
-              <Table.Th>Actions</Table.Th>
-              <Table.Th />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
     </Container>
   );
 }
