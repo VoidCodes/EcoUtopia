@@ -368,6 +368,7 @@ function EditCourse() {
                             style={{ marginBottom: rem(1) }}
                             onClick={() => {
                                 console.log(formData)
+                                console.log(localStorage.getItem('fileLocation'))
                             }}
                             type='submit'
                         >
