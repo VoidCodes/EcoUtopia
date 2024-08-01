@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext.jsx';
 //import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 // Pages and components
 import App from './pages/App.jsx';
@@ -21,15 +23,15 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
-import Orders from './pages/orders/Orders.jsx';
-import EditOrders from './pages/EditOrders';
-import OrderDetails from './pages/orders/OrderDetails.jsx';
+import Orders from './pages/Orders';
+import OrderDetails from './pages/OrderDetails';
 import AdminCourses from './pages/admin/courses/AdminCourses';
 import CreateCourse from './pages/admin/courses/CreateCourse';
 import EditCourse from './pages/admin/courses/EditCourse.jsx';
 import AdminOrders from './pages/AdminOrders';
-import Posts from './pages/posts/Posts.jsx';
-import CreatePost from './pages/posts/CreatePost.jsx';
+import Success from './pages/Success.jsx';
+import Posts from './pages/Posts';
+import CreatePost from './pages/CreatePost.jsx';
 
 import {
   BrowserRouter,

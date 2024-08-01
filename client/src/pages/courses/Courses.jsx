@@ -99,6 +99,8 @@ function Courses() {
           <Checkbox
             label="Show only free courses"
             style={{ marginTop: 20 }}
+            checked={selectedFree}
+            onChange={(event) => setSelectedFree(event.currentTarget.checked)}
           />
           <Text weight={700} style={{ marginTop: 20 }}>
             Price Range
@@ -142,7 +144,7 @@ function Courses() {
             Course Catalog
           </Text>
           <Grid>
-        {courses.map((course) => (
+        {filteredCourses.map((course) => (
           <Grid.Col key={course.course_id} span={4}>
             <Card
               shadow="md"

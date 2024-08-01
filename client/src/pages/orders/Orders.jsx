@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
-import { CiEdit } from 'react-icons/ci';
-import { FaRegEye } from "react-icons/fa6";
-import { Container, Grid, Anchor, Card, Text, Button, Group, SegmentedControl } from "@mantine/core";
+import { Container, Grid, Anchor, Card, Text, Button, Group, SegmentedControl, Badge, Image, Modal } from "@mantine/core";
 import LoaderComponent from '../../components/Loader';
-
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss'; // Define your date format here
+const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 function Orders() {
   const [ordersList, setOrdersList] = useState([]);
