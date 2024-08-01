@@ -63,7 +63,7 @@ router.post('/create-post', authenticateToken, parsefile, async (req, res) => {
   
       await transaction.commit();
   
-      res.status(201).json({ post: newPost });
+      res.status(201).json({ message: 'Post created successfully', post: newPost });
     } catch (error) {
       await transaction.rollback();
       console.error('Post creation error:', error);

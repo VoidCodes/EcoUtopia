@@ -137,7 +137,7 @@ function App() {
         </Group>
       </Container>
     </Container>
-  )
+  );
 }
 
-export default App
+export default App;

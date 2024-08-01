@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { Container, Grid, Anchor, Card, Text, Button, Group, SegmentedControl, Badge, Image, Modal } from "@mantine/core";
-import LoaderComponent from '../components/Loader.jsx';
+import LoaderComponent from '../../components/Loader.jsx';
 
 const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 

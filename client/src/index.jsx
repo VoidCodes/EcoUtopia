@@ -21,7 +21,7 @@ import ResetPasswordEnterEmail from './pages/ResetPasswordEnterEmail.jsx';
 import ResetPasswordEnterCode from './pages/ResetPasswordEnterCode.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
-import AccountManagement from './pages/AccountManagement.jsx';
+import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
 import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';

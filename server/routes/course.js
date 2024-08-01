@@ -177,9 +177,7 @@ router.put("/updateCourse/:id", parsefile, async (req, res) => {
       course_start_time,
       course_end_time,
       course_capacity,
-      course_image_url,
     } = await schema.validate(req.body, { abortEarly: false });
-
     /*let course_img_url = course.course_image_url;
     if (req.files && req.files.course_img) {
       course_img_url = await parsefile(req.files);
