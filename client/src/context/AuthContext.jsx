@@ -94,13 +94,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-
+  
+      // Check if displayName contains spaces and split accordingly
+      const displayNameParts = user.displayName ? user.displayName.split(' ') : ['FirstName'];
+      const firstName = displayNameParts[0];
+      const lastName = displayNameParts.length > 1 ? displayNameParts.slice(1).join(' ') : 'LastName';
+  
       const response = await axios.post('/user/oauth-login', {
         email: user.email,
-        firstName: user.displayName.split(' ')[0],
-        lastName: user.displayName.split(' ')[1] || 'User',
+        firstName,
+        lastName,
       });
-
+  
       const { user: newUser, token, resident, staff, instructor } = response.data;
       const userData = {
         ...newUser,
@@ -118,6 +123,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+  
 
   const logout = () => {
     setUser(null);
