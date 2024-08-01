@@ -8,7 +8,7 @@ const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = process.env.S3_REGION;
 const Bucket = process.env.S3_BUCKET;
 
-const parsefile = async (req) => {
+const parsefile = async (req, res, next) => {
     return new Promise((resolve, reject) => {
         let options = {
             maxFileSize: 2 * 1024 * 1024 * 1024, // 2GB converted to bytes
@@ -16,17 +16,20 @@ const parsefile = async (req) => {
         }
 
         const form = new Formidable(options);
-        
+
         form.parse(req, (err, fields, files) => {
             if (err) {
                 reject(err.message);
             }
+            req.body = fields;
+            req.file = files.image;
+            next();
         });
 
         form.on('error', error => {
             reject(error.message)
         })
-        
+
         form.on('fileBegin', (formName, file) => {
             //const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Generate timestamp
 
@@ -70,7 +73,7 @@ const parsefile = async (req) => {
                         form.emit('data', { name: "complete", value: data });
                         console.log(`Successfully uploaded ${this.originalFilename} to ${Bucket}/${data.Key}`);
                         console.log(`Location: ${data.Location}`);
-                        localStorage.setItem('fileLocation', data.Location);
+                        //localStorage.setItem('fileLocation', data.Location);
                         resolve(data.Location);
                     }).catch((err) => {
                         form.emit('error', err);
