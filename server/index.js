@@ -76,6 +76,8 @@ const translateText = async (text, targetLanguage) => {
 const handleTranslation = async (req, res) => {
     const { text, targetLanguage } = req.body;
 
+    console.log('Received translation request:', { text, targetLanguage });
+
     if (!text || !targetLanguage) {
         return res.status(400).json({ error: 'Text and targetLanguage are required.' });
     }
@@ -84,9 +86,11 @@ const handleTranslation = async (req, res) => {
         const translatedText = await translateText(text, targetLanguage);
         res.json({ translatedText });
     } catch (error) {
+        console.error('Error translating text:', error);
         res.status(500).json({ error: 'Error translating text.' });
     }
 };
+
 
 // Define the translate route
 app.post('/api/translate', handleTranslation);

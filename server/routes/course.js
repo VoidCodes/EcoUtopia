@@ -109,7 +109,7 @@ router.get("/getCourse/:id", async (req, res) => {
   }
 })
 
-router.put("/updateCourse/:id", parsefile, async(req, res) => {
+router.put("/updateCourse/:id", parsefile, parsefile, async(req, res) => {
   const schema = yup.object().shape({
     course_name: yup.string().required("Course name is required"),
     course_description: yup.string().required("Course description is required"),
@@ -161,7 +161,7 @@ router.put("/updateCourse/:id", parsefile, async(req, res) => {
     course_image_url: yup
       .string()
       .required("Image URL is required"),
-    });
+  });
   try {
     const course = await Course.findByPk(req.params.id);
     if (!course) {
@@ -179,6 +179,7 @@ router.put("/updateCourse/:id", parsefile, async(req, res) => {
       course_capacity,
       course_image_url,
     } = await schema.validate(req.body, { abortEarly: false });
+
     /*let course_img_url = course.course_image_url;
     if (req.files && req.files.course_img) {
       course_img_url = await parsefile(req.files);
@@ -195,6 +196,33 @@ router.put("/updateCourse/:id", parsefile, async(req, res) => {
       course_start_time,
       course_end_time,
       course_capacity,
+      //course_image_url: course_img_url,
+      course_image_url,  
+
+    });
+
+    console.log(`Course ${course.course_name} updated successfully`);
+    res.status(200).json(course);
+    fileparser(req)
+      .then((result) => {
+        course.update({
+          course_name,
+          course_description,
+          course_instructor,
+          course_price,
+          course_type,
+          course_date,
+          course_start_time,
+          course_end_time,
+          course_capacity,
+          course_image_url
+        });
+        console.log(`Course ${course.course_name} updated successfully`);
+        res.status(200).json(course);
+      })
+      .catch((error) => {
+        res.status(400).json({ message: "Error uploading file: " + error });
+      });
       //course_image_url: course_img_url,
       course_image_url,
     });

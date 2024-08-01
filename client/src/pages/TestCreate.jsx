@@ -39,40 +39,40 @@ function TestCreate() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
-    
+
         if (!title || !content || !tags) {
           alert("Title, content, and tags are required");
           setLoading(false);
           return;
         }
-        
+
         const token = sessionStorage.getItem('token');
         const formData = new FormData();
         formData.append("title", title);
         formData.append("content", content);
         formData.append("tags", tags);
         if (image) formData.append("image", image);
-    
+
         try {
             if (!token) throw new Error("No token found");
 
             const residentId = user?.resident?.resident_id;
             const residentName = user?.resident?.name;
-      
+
             console.log("resident_id", residentId);
             console.log("residentName:", residentName);
-      
+
             if (!residentId) throw new Error("No resident ID found");
             if (!residentName) throw new Error("No resident name found");
-      
+
             formData.append("resident_id", residentId);
             formData.append("residentName", residentName);
-          
+
             console.log("FormData entries:");
             formData.forEach((value, key) => {
                 console.log(key, value);
             });
-    
+
           await axios.post("http://localhost:3001/posts/create-post", formData, {
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -91,13 +91,11 @@ function TestCreate() {
 
     /*const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!courseName || !courseDesc || !courseInstructor || !coursePrice || !courseType || !courseDate || !courseStartTime || !courseEndTime || !courseCapacity) {
             alert("Please fill in all fields");
             setLoading(false);
             return;
         }
-
         const formData = new FormData();
         formData.append("courseName", courseName);
         formData.append("courseDesc", courseDesc);
@@ -111,12 +109,10 @@ function TestCreate() {
         if (image) {
             formData.append("image", image);
         }
-
         console.log("FormData entries:");
         formData.forEach((value, key) => {
             console.log(key, value);
         });
-
         try {
             await axios.post("http://localhost:3001/courses/createCourse", formData, {
                 headers: {
@@ -130,7 +126,6 @@ function TestCreate() {
         }
     };
     
-
     if (loading) {
         return <LoaderComponent />;
     }*/

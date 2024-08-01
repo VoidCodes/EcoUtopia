@@ -1,18 +1,21 @@
-import Navbar from "../components/Navbar";
-import { useEffect } from "react";
+import { useDisclosure } from '@mantine/hooks';
 import {
+  Button,
   Container,
+  Group,
+  Anchor,
+  Modal,
+  Text,
   Box,
   Card,
   Grid,
-  Button,
-  Group,
-  Anchor,
-  Text,
   Title,
   BackgroundImage,
-  Divider,
+  Divider
 } from "@mantine/core";
+import Navbar from "../components/Navbar";
+import { useEffect } from "react";
+
 
 function App() {
   useEffect(() => {

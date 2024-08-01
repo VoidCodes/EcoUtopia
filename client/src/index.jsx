@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext.jsx';
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
 // Pages and components
 import App from './pages/App.jsx';
 import TestPage from './pages/TestPage.jsx';
+import TestCreate from './pages/TestCreate.jsx';
 import TestCreate from './pages/TestCreate.jsx';
 import Courses from './pages/courses/Courses.jsx';
 import ViewCourse from './pages/courses/ViewCourse.jsx';
@@ -25,6 +25,9 @@ import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
 import Orders from './pages/orders/Orders';
 import OrderDetails from './pages/orders/OrderDetails';
+import AdminCourses from './pages/AdminCourses';
+import CreateCourse from './pages/CreateCourse';
+import EditCourse from './pages/EditCourse.jsx';
 import AdminCourses from './pages/admin/courses/AdminCourses';
 import CreateCourse from './pages/admin/courses/CreateCourse';
 import EditCourse from './pages/admin/courses/EditCourse.jsx';
