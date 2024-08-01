@@ -56,5 +56,5 @@ module.exports = (sequelize, DataTypes) => {
         Course.hasMany(models.Orders, { foreignKey: 'course_id' });
     };
 
-    return Course;
+    return Course;
 }
