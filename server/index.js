@@ -6,6 +6,7 @@ const db = require('./models');
 const seedAdmin = require('./initialize'); // Adjust the path as needed
 const fileparser = require('./middleware/fileparser');
 require('dotenv').config();
+require('./middleware/cron');
 
 const { TranslateClient, TranslateTextCommand } = require('@aws-sdk/client-translate');
 
