@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoaderComponent from '../components/Loader';
 import Navbar from '../components/Navbar';
-import { Card, Button, Text, Group, Image, Stack, Container, Modal, TextInput } from '@mantine/core';
+import { Card, Button, Text, Group, Image, Stack, Container, Modal, TextInput, Switch } from '@mantine/core';
 import { useAuth } from '../context/AuthContext';
 
 const Posts = () => {
@@ -14,7 +14,9 @@ const Posts = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [search, setSearch] = useState('');
+    const [autoplay, setAutoplay] = useState(false);
     const navigate = useNavigate();
+    const videoRefs = useRef([]);
 
     const fetchPosts = async () => {
         try {
@@ -38,6 +40,30 @@ const Posts = () => {
         fetchPosts();
         document.title = "Posts - EcoUtopia";
     }, []);
+
+    useEffect(() => {
+        if (autoplay && videoRefs.current.length) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.play();
+                    } else {
+                        entry.target.pause();
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            videoRefs.current.forEach(video => {
+                observer.observe(video);
+            });
+
+            return () => {
+                videoRefs.current.forEach(video => {
+                    observer.unobserve(video);
+                });
+            };
+        }
+    }, [autoplay, posts]);
 
     const handleReport = async (postId) => {
         try {
@@ -81,11 +107,18 @@ const Posts = () => {
     );
 
     return (
-        <>
+        <div style={{ minHeight: '100vh', margin: 0, padding: 0 }}>
             <Navbar />
-            <Text align="center" size="xl" weight={700} mt={20}>
-                Posts
-            </Text>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '20px' }}>
+                <Text align="center" size="xl" weight={700}>
+                    Posts
+                </Text>
+                <Switch
+                    checked={autoplay}
+                    onChange={() => setAutoplay(!autoplay)}
+                    label="Autoplay Videos"
+                />
+            </div>
             <Button variant="light" style={{ marginLeft: 20 }}>
                 <Link to="/createPost">Create Post</Link>
             </Button>
@@ -100,7 +133,7 @@ const Posts = () => {
                     {filteredPosts.length === 0 ? (
                         <Text align="center">No posts found</Text>
                     ) : (
-                        filteredPosts.map(post => (
+                        filteredPosts.map((post, index) => (
                             <Card
                                 key={post.post_id}
                                 shadow="sm"
@@ -144,7 +177,11 @@ const Posts = () => {
                                             />
                                         )}
                                         {isVideo(post.imageUrl) && (
-                                            <video width="400" controls>
+                                            <video
+                                                ref={(el) => (videoRefs.current[index] = el)}
+                                                width="400"
+                                                controls
+                                            >
                                                 <source src={`http://localhost:3001/${post.imageUrl}`} type="video/mp4" />
                                                 Your browser does not support the video tag.
                                             </video>
@@ -177,7 +214,7 @@ const Posts = () => {
                     <Button color="red" onClick={handleDelete}>Confirm Delete</Button>
                 </Group>
             </Modal>
-        </>
+        </div>
     );
 };
 

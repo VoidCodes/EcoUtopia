@@ -108,6 +108,7 @@ const PostDetails = () => {
       console.log('Comment update response:', response.data);
 
       if (response.data) {
+        window.location.reload();
         setComments(prevComments => prevComments.map(comment =>
           comment.id === editingCommentId ? response.data : comment
         ));
