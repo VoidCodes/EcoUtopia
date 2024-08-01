@@ -6,9 +6,7 @@ const fs = require('fs');
 const path = require('path'); // Import the path module
 const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 const upload = require('../middleware/fileupload');
-
-
-const reportedPosts = {};
+const fileparser = require('../middleware/fileparser');
 
 // Input validation schema
 const postSchema = yup.object().shape({
@@ -36,11 +34,12 @@ const deleteFile = (filePath) => {
 };
 
 // Create a new post
-router.post('/create-post', authenticateToken, upload.single('image'), async (req, res) => {
+router.post('/create-post', authenticateToken, /*fileparser*/ upload.single('image'), async (req, res) => {
     const transaction = await Post.sequelize.transaction();
     try {
-      const { title, content, resident_id, residentName, tags } = req.body;
-      let image = req.file ? req.file.path : null; // Path to the uploaded image
+      const { title, content, resident_id, residentName } = req.body;
+      //const imageUrl = req.file ? req.file.path : null; // Path to the uploaded image
+      let image = req.file ? req.file.path : null; 
 
       if (image) {
         image = image.replace(/\\/g, '/').replace('public/', '');
@@ -60,7 +59,7 @@ router.post('/create-post', authenticateToken, upload.single('image'), async (re
   
       await transaction.commit();
   
-      res.status(201).json({ post: newPost });
+      res.status(201).json({ message: 'Post created successfully', post: newPost });
     } catch (error) {
       await transaction.rollback();
       console.error('Post creation error:', error);
