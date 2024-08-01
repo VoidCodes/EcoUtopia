@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import TicTacToe from '../../components/TicTacToe.jsx';
-import MemoryCardGame from '../../components/MemoryCardGame.jsx';
-import SnakeGame from '../../components/SnakeGame.jsx';
+import TicTacToe from '../components/TicTacToe.jsx';
+import MemoryCardGame from '../components/MemoryGame.jsx';
+import SnakeGame from '../components/SnakeGame.jsx';
 import './ErrorPage.css'; // Import the CSS for glowing effect
 
 const ErrorPage = () => {

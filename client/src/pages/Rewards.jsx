@@ -21,8 +21,8 @@ import {
   MultiSelect,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import Navbar from "../../components/Navbar";
-import WordleGame from "../../components/EcoWordleGame";
+import Navbar from "../components/Navbar";
+import WordleGame from "../components/EcoWordleGame";
 
 function ViewRewards() {
   const [rewards, setRewards] = useState([]);
