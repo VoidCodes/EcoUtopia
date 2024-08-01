@@ -28,7 +28,7 @@ const parsefile = async (req) => {
         })
         
         form.on('fileBegin', (formName, file) => {
-            const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Generate timestamp
+            //const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Generate timestamp
 
             file.open = async function () {
                 this._writeStream = new Transform({
@@ -69,6 +69,8 @@ const parsefile = async (req) => {
                         //console.log(`Successfully uploaded ${this.originalFilename} to ${Bucket}/${data.Key}`);
                         form.emit('data', { name: "complete", value: data });
                         console.log(`Successfully uploaded ${this.originalFilename} to ${Bucket}/${data.Key}`);
+                        console.log(`Location: ${data.Location}`);
+                        localStorage.setItem('fileLocation', data.Location);
                         resolve(data.Location);
                     }).catch((err) => {
                         form.emit('error', err);
