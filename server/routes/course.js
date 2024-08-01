@@ -3,6 +3,8 @@ const yup = require("yup");
 const { Course, Sequelize } = require("../models");
 const fileparser = require("../middleware/fileparser");
 const parsefile = require("../middleware/fileparser");
+const fileparser = require("../middleware/fileparser");
+const parsefile = require("../middleware/fileparser");
 const router = express.Router();
 
 router.post("/createCourse", async (req, res) => {

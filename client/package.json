@@ -39,7 +39,10 @@
 		"react-icons": "^5.2.1",
 		"react-router-dom": "^6.23.1",
 		"react-share": "^5.1.0",
+<<<<<<< HEAD
 		"react-social-login-buttons": "^4.1.0",
+=======
+>>>>>>> 8471b6bc1b1adb1034474f0b9b38b172657291e7
 		"tabler": "^1.0.0-alpha.8",
 		"tabler-icons-react": "^1.56.0",
 		"yup": "^1.4.0"

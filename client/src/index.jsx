@@ -1,4 +1,5 @@
 import '@mantine/dates/styles.css';
+import '@mantine/dates/styles.css';
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -32,6 +33,9 @@ import EditCourse from './pages/EditCourse.jsx';
 import AdminCourses from './pages/admin/courses/AdminCourses';
 import CreateCourse from './pages/admin/courses/CreateCourse';
 import EditCourse from './pages/admin/courses/EditCourse.jsx';
+import AdminCourses from './pages/AdminCourses';
+import CreateCourse from './pages/CreateCourse';
+import EditCourse from './pages/EditCourse.jsx';
 import AdminOrders from './pages/AdminOrders';
 import Success from './pages/Success.jsx';
 import Posts from './pages/posts/Posts';
@@ -93,6 +97,7 @@ function Main() {
         <Route path="/course/:courseId" element={<ViewCourse />} />
         <Route path="/login" element={<Login />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/testcreate" element={<TestCreate />} />
         <Route path="/testcreate" element={<TestCreate />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
