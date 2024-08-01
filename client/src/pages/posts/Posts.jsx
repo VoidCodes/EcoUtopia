@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import LoaderComponent from '../components/Loader';
-import Navbar from '../components/Navbar';
+import LoaderComponent from '../../components/Loader';
+import Navbar from '../../components/Navbar';
 import { Card, Button, Text, Group, Image, Stack, Container, Modal } from '@mantine/core';
 
 const Posts = () => {
@@ -110,7 +110,8 @@ const Posts = () => {
                                 <Image
                                     w={400}
                                     h={400}
-                                    src={`http://localhost:3001${post.imageUrl}`}
+                                    //src={`${post.imageUrl}`}
+                                    src={`http://localhost:3001/${post.imageUrl}`} 
                                 />
                             )}
                             <Text mt="md">{post.content}</Text>
