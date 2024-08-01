@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         order_status: {
-            type: DataTypes.ENUM('Upcoming', 'Completed', 'Refunded'),
+            type: DataTypes.ENUM('Upcoming', 'Completed', 'Refunded', 'Pending'),
             allowNull: false
         }
         
@@ -33,4 +33,4 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     return Orders;
-}
+};
