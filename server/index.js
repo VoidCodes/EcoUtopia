@@ -41,12 +41,14 @@ app.use('/uploads', express.static('uploads'));
 const courseRoute = require('./routes/course');
 const userRoute = require('./routes/user');
 const ordersRoute = require('./routes/orders');
+const paymentRoute = require('./routes/payment');
 const postsRoute = require('./routes/post');
 
 app.use("/courses", courseRoute);
 app.use('/user', userRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-app.use("/orders", ordersRoute);    
+app.use("/orders", ordersRoute); 
+app.use("/payment", paymentRoute);
 app.use("/posts", postsRoute);
 
 db.sequelize.sync({ alter: true }).then(async () => {

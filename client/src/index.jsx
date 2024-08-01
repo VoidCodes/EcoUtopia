@@ -1,7 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext.jsx';
-//import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 // Pages and components
 import App from './pages/App.jsx';
@@ -21,15 +23,15 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/admin/accounts/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
-import Orders from './pages/orders/Orders.jsx';
-import EditOrders from './pages/EditOrders';
-import OrderDetails from './pages/orders/OrderDetails.jsx';
+import Orders from './pages/Orders';
+import OrderDetails from './pages/OrderDetails';
 import AdminCourses from './pages/admin/courses/AdminCourses';
 import CreateCourse from './pages/admin/courses/CreateCourse';
 import EditCourse from './pages/admin/courses/EditCourse.jsx';
 import AdminOrders from './pages/AdminOrders';
-import Posts from './pages/posts/Posts.jsx';
-import CreatePost from './pages/posts/CreatePost.jsx';
+import Success from './pages/Success.jsx';
+import Posts from './pages/Posts';
+import CreatePost from './pages/CreatePost.jsx';
 
 import {
   BrowserRouter,
@@ -39,6 +41,7 @@ import {
 import '@mantine/core/styles.css';
 import { Box, MantineProvider, createTheme, rem } from '@mantine/core'
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const theme = createTheme({
   //primaryColor: 'violet'
@@ -75,7 +78,7 @@ function Main() {
   return (
     <>
       <Navbar />
-      <Box padding="xl" style={{marginTop: '70px'}} />
+      <Box padding="xl" style={{ marginTop: '70px' }} />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/courses" element={<Courses />} />
@@ -92,15 +95,15 @@ function Main() {
         <Route path="/reset-password-code" element={<ResetPasswordEnterCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/password-reset-success" element={<PasswordResetSuccess />} />
-        <Route path="/account-management" element={<AccountManagement/>} />
-        <Route path="/account-activation" element={<AccountActivation/>} />
+        <Route path="/account-management" element={<AccountManagement />} />
+        <Route path="/account-activation" element={<AccountActivation />} />
         <Route path="/orders" element={<Orders />} />
-        <Route path="/editorders/:orderId" element={<EditOrders/>} />
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/admin/create-course" element={<CreateCourse />} />
         <Route path="/admin/edit-course/:courseId" element={<EditCourse />} />
+        <Route path="/success" element={<Success />} />
         <Route path="/posts" element={<Posts />} />
         <Route path="/createPost" element = {<CreatePost />} />
       </Routes>
@@ -113,9 +116,11 @@ root.render(
   <React.StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="light">
           <AuthProvider>
-            <BrowserRouter>
-              <Main />
-            </BrowserRouter>
+            <Elements stripe={stripePromise}>
+              <BrowserRouter>
+                <Main />
+              </BrowserRouter>
+            </Elements>
           </AuthProvider>
     </MantineProvider>
   </React.StrictMode>

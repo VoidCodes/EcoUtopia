@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         course_image_url: {
             type: DataTypes.STRING(500),
-            allowNull: false
+            allowNull: true
         },
 
     }, {
