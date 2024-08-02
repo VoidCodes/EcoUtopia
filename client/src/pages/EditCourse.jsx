@@ -166,7 +166,7 @@ function EditCourse() {
                     course_start_time: formData.course_start_time,
                     course_end_time: formData.course_end_time,
                     course_capacity: parseInt(formData.course_capacity),
-                    //course_img: formData.course_img,
+                    course_img: formData.course_img,
                 }));
 
                 // Send the request

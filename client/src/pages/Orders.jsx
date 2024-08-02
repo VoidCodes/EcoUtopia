@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
@@ -82,7 +82,7 @@ function Orders() {
 
   return (
     <Container size="xl" style={{ marginTop: 20 }}>
-      <Text align="start" weight={700} style={{ fontSize: 30, marginBottom: 20 }} color="deepBlue" fw={500} size="xl">
+      <Text align="start" weight={700} style={{ fontSize: 30, marginBottom: 20 }} c="deepBlue" fw={500} size="xl">
         Orders
       </Text>
       <Group position="apart" style={{ marginBottom: 20 }}>

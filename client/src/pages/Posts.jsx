@@ -178,7 +178,7 @@ const Posts = () => {
                       />
                     )}
                     {isVideo(post.imageUrl) && (
-                      <video width="400" controls>
+                      <video width="400" controls autoPlay loop>
                         <source
                           src={`http://localhost:3001/${post.imageUrl}`}
                           type="video/mp4"
