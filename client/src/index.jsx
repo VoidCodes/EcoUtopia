@@ -25,6 +25,7 @@ import AccountManagement from './pages/AccountManagement.jsx';
 import AccountActivation from './pages/AccountActivation.jsx'
 import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';
+import Products from './pages/products/Products.jsx';
 import AdminCourses from './pages/AdminCourses';
 import CreateCourse from './pages/CreateCourse';
 import EditCourse from './pages/EditCourse.jsx';
@@ -103,6 +104,7 @@ function Main() {
         <Route path="/account-activation" element={<AccountActivation />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/view-courses" element={<AdminCourses />} />
         <Route path="/admin/create-course" element={<CreateCourse />} />
