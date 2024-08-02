@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         profile_pic: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        ecoPoints: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: 0
         }
     }, {
         tableName: 'resident'
@@ -47,5 +52,5 @@ module.exports = (sequelize, DataTypes) => {
         Resident.hasMany(models.Rewards, { foreignKey: 'resident_id' });
     }
 
-    return Resident;
+    return Resident;
 }
