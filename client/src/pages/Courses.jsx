@@ -176,8 +176,8 @@ function Courses() {
               <Text weight={500} size="md" style={{ marginTop: 10, marginBottom: 5 }}>
                 {course.course_name}
               </Text>
-              <Text size="sm" color="dimmed">
-                {dayjs(course.start_date).format("DD MMM YYYY")} |{" "}
+              <Text size="sm" c="dimmed">
+                {dayjs(course.course_date).format("DD MMM YYYY")} |{" "}
                 {formatMySQLTimeString(course.course_start_time)} -{" "}
                 {formatMySQLTimeString(course.course_end_time)}
               </Text>
