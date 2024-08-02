@@ -1,10 +1,8 @@
-import { useDisclosure } from '@mantine/hooks';
 import {
   Button,
   Container,
   Group,
   Anchor,
-  Modal,
   Text,
   Box,
   Card,
