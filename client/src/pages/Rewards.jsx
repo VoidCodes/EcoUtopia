@@ -11,18 +11,16 @@ import {
   Modal,
   Group,
   Alert,
-  Grid,
-  Card,
-  Paper,
-  Image,
-  Pagination,
   Table,
   Checkbox,
   MultiSelect,
+  Pagination,
+  Paper,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import Navbar from "../../components/Navbar";
-import WordleGame from "../../components/EcoWordleGame";
+import Navbar from "../components/Navbar";
+import EcoWordleGame from './EcoWordleGame.jsx';
 
 function ViewRewards() {
   const [rewards, setRewards] = useState([]);
@@ -45,6 +43,7 @@ function ViewRewards() {
   const [selectedCategories, setSelectedCategories] = useState([]); // Selected categories for filtering
   const [tags, setTags] = useState([]); // Reward tags
   const [selectedTags, setSelectedTags] = useState([]); // Selected tags for filtering
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // State for login alert
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -108,7 +107,7 @@ function ViewRewards() {
 
   const handlePlayWordle = () => {
     if (!isLoggedIn) {
-      setAlertMessage("You need to log in to play the game!");
+      setShowLoginAlert(true); // Show login alert
       return;
     }
     setShowWordleGame(true);
@@ -222,128 +221,103 @@ function ViewRewards() {
         )}
       </Modal>
 
+      <Alert title="You need to log in" color="red" withCloseButton opened={showLoginAlert} onClose={() => setShowLoginAlert(false)}>
+        Please log in to play the game.
+      </Alert>
+
       <Text align="center">Points: {userPoints}</Text> {/* Display user points */}
-      <Button onClick={handlePlayWordle} style={{ marginBottom: 20 }}>
-        Play Wordle Game to Earn Points
-      </Button>
 
-      <Suspense fallback={<LoadingOverlay visible />}>
-        {showWordleGame && <WordleGame onClose={() => setShowWordleGame(false)} onWin={handleWinWordle} />}
-      </Suspense>
+      {/* Add a button to play the Wordle game */}
+      <Button onClick={handlePlayWordle}>Play Wordle</Button>
 
-      <Text align="start" weight={700} style={{ fontSize: 30, marginBottom: 20 }} c="deepBlue" fw={500} size="xl">
-        Check out our cool rewards!
-      </Text>
-      <TextInput
-        placeholder="Search rewards"
-        value={searchTerm}
-        onChange={(event) => setSearchTerm(event.currentTarget.value)}
-        style={{ marginBottom: 20 }}
-      />
-      <Select
-        value={sortOrder}
-        onChange={handleSortChange}
-        data={[
-          { value: "asc", label: "Sort by Points (Ascending)" },
-          { value: "desc", label: "Sort by Points (Descending)" },
-        ]}
-        placeholder="Sort by"
-        style={{ marginBottom: 20 }}
-      />
-      <Select
-        value={sortColumn}
-        onChange={setSortColumn}
-        data={[
-          { value: "reward_name", label: "Sort by Name" },
-          { value: "reward_points", label: "Sort by Points" },
-          { value: "reward_expiration", label: "Sort by Expiration Date" },
-        ]}
-        placeholder="Sort by Column"
-        style={{ marginBottom: 20 }}
-      />
-      <MultiSelect
-        data={categories.map((category) => ({ value: category, label: category }))}
-        value={selectedCategories}
-        onChange={setSelectedCategories}
-        placeholder="Filter by categories"
-        style={{ marginBottom: 20 }}
-      />
-      <MultiSelect
-        data={tags.map((tag) => ({ value: tag, label: tag }))}
-        value={selectedTags}
-        onChange={setSelectedTags}
-        placeholder="Filter by tags"
-        style={{ marginBottom: 20 }}
-      />
-      <Checkbox
-        label="Show only favorite rewards"
-        checked={showFavorites}
-        onChange={(event) => setShowFavorites(event.currentTarget.checked)}
-        style={{ marginBottom: 20 }}
-      />
-      <Button onClick={handleExportToCSV} style={{ marginBottom: 20 }}>
-        Export to CSV
-      </Button>
-      {alertMessage && (
-        <Alert title="Notice" color="red" onClose={() => setAlertMessage("")}>
-          {alertMessage}
-        </Alert>
-      )}
-      <Table highlightOnHover>
+      {/* Modal for the Wordle game */}
+      <Modal opened={showWordleGame} onClose={() => setShowWordleGame(false)} title="EcoWordle Game" size="lg">
+        <EcoWordleGame onWin={handleWinWordle} />
+      </Modal>
+
+      <Box padding="xl" style={{ marginTop: "30px" }} />
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
+        <TextInput
+          placeholder="Search for rewards"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.currentTarget.value)}
+          style={{ width: "300px" }}
+        />
+        <Button color="blue" onClick={handleExportToCSV}>
+          Export to CSV
+        </Button>
+        <Select
+          value={sortOrder}
+          onChange={handleSortChange}
+          placeholder="Sort by"
+          data={[
+            { value: "asc", label: "Ascending" },
+            { value: "desc", label: "Descending" },
+          ]}
+          style={{ width: "200px" }}
+        />
+      </Box>
+
+      <Table striped highlightOnHover withBorder>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Points</th>
-            <th>Expiration Date</th>
+            <th style={{ cursor: "pointer" }} onClick={() => setSortColumn("reward_name")}>
+              Name {sortColumn === "reward_name" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
+            <th style={{ cursor: "pointer" }} onClick={() => setSortColumn("reward_points")}>
+              Points {sortColumn === "reward_points" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
+            <th style={{ cursor: "pointer" }} onClick={() => setSortColumn("reward_expiration")}>
+              Expiration Date {sortColumn === "reward_expiration" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
+            <th>Category</th>
+            <th>Tags</th>
             <th>Actions</th>
+            <th>Favorite</th>
           </tr>
         </thead>
         <tbody>
           {paginatedRewards.map((reward) => (
             <tr key={reward.reward_id}>
               <td>{reward.reward_name}</td>
-              <td>{reward.reward_description}</td>
               <td>{reward.reward_points}</td>
-              <td>{reward.reward_expiration ? new Date(reward.reward_expiration).toLocaleDateString() : "N/A"}</td>
               <td>
-                <Button variant="outline" color="blue" size="xs" onClick={() => handlePreviewReward(reward)}>
+                {reward.reward_expiration
+                  ? new Date(reward.reward_expiration).toLocaleDateString()
+                  : "N/A"}
+              </td>
+              <td>{reward.category}</td>
+              <td>{reward.tags.join(", ")}</td>
+              <td>
+                <Button onClick={() => handleRedeemClick(reward)} style={{ marginRight: "10px" }}>
+                  Redeem
+                </Button>
+                <Button color="blue" onClick={() => handlePreviewReward(reward)}>
                   Preview
                 </Button>
-                <Button
-                  variant="outline"
-                  color="yellow"
-                  size="xs"
-                  onClick={() => handleFavoriteToggle(reward)}
-                  style={{ marginLeft: 5 }}
-                >
-                  {favoriteRewards.includes(reward.reward_id) ? "Unfavorite" : "Favorite"}
-                </Button>
+              </td>
+              <td>
+                <Checkbox
+                  checked={favoriteRewards.includes(reward.reward_id)}
+                  onChange={() => handleFavoriteToggle(reward)}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <Select
-        value={pageSize.toString()}
-        onChange={(value) => setPageSize(Number(value))}
-        data={[
-          { value: "5", label: "5 items per page" },
-          { value: "10", label: "10 items per page" },
-          { value: "20", label: "20 items per page" },
-        ]}
-        placeholder="Items per page"
-        style={{ marginTop: 20 }}
-      />
+
       <Pagination
-        total={Math.ceil(filteredRewards.length / pageSize)}
         page={currentPage}
         onChange={setCurrentPage}
-        size="sm"
-        radius="md"
-        withControls
-        withEdges
-        style={{ marginTop: 20 }}
+        total={Math.ceil(filteredRewards.length / pageSize)}
+        style={{ marginTop: "20px" }}
       />
     </Container>
   );
