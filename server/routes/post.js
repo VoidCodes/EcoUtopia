@@ -37,14 +37,14 @@ const deleteFile = (filePath) => {
 };
 
 // Create a new post
-router.post('/create-post', authenticateToken, parsefile, async (req, res) => {
+router.post('/create-post', authenticateToken, upload.single('image') /*parsefile*/, async (req, res) => {
     const transaction = await Post.sequelize.transaction();
     try {
       const { title, content, resident_id, residentName, tags } = req.body;
       let image = req.file ? req.file.path : null; // Path to the uploaded image
 
       if (image) {
-        image = image.replace(/\\/g, '/').replace('ecoutopia-bucket/', '');
+        image = image.replace(/\\/g, '/').replace('public', ''); // Replace backslashes with forward slashes
       }
   
       // Validate the other fields
