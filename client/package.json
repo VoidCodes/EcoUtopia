@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@hookform/resolvers": "^3.6.0",
 		"@mantine/core": "^7.11.1",
-		"@mantine/dates": "^7.11.1",
+		"@mantine/dates": "^7.11.2",
 		"@mantine/form": "^7.11.1",
 		"@mantine/hooks": "^7.11.1",
 		"@rollup/rollup-win32-x64-msvc": "^4.18.1",
