@@ -45,7 +45,7 @@ function Navbar() {
                 </Text>
               </Anchor>
             )}
-            <Anchor href="/rewards" style={{ textDecoration: "none" }}>
+            <Anchor href="/viewrewards" style={{ textDecoration: "none" }}>
               <Text tt="uppercase" fw={'500'} c="black" style={{ marginLeft: 10, marginRight: 10 }}>
                 Rewards
               </Text>
