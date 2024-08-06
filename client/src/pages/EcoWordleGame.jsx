@@ -7,7 +7,6 @@ const MAX_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
 const LOCKOUT_KEY = 'wordleLockout';
 const POINTS_KEY = 'userPoints';
-const LOGIN_KEY = 'isLoggedIn';
 const LEADERBOARD_KEY = 'leaderboard';
 
 const getRandomWord = () => WORDS[Math.floor(Math.random() * WORDS.length)];
@@ -22,22 +21,17 @@ function EcoWordleGame() {
   const [win, setWin] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [points, setPoints] = useState(Number(localStorage.getItem(POINTS_KEY) || 0));
-  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(localStorage.getItem(LOGIN_KEY)));
   const [timer, setTimer] = useState(0);
   const [hintUsed, setHintUsed] = useState(false);
   const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || []);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login'); // Redirect to login page if not logged in
-    }
-
-    const lockoutTime = localStorage.getItem(LOCKOUT_KEY);
+    /*const lockoutTime = localStorage.getItem(LOCKOUT_KEY);
     if (lockoutTime && new Date() < new Date(lockoutTime)) {
       alert("The game is locked for 24 hours.");
-      navigate('/rewards');
-    }
-  }, [isLoggedIn, navigate]);
+      navigate('/viewrewards');
+    }*/
+  }, [navigate]);
 
   useEffect(() => {
     if (currentAttempt === MAX_ATTEMPTS && !win) {
@@ -66,7 +60,9 @@ function EcoWordleGame() {
       updatedGuesses[currentAttempt] = currentGuess;
       setGuesses(updatedGuesses);
 
-      if (currentGuess === word) {
+      // Testing for win condition
+
+      if (true) {
         setWin(true);
         setGameOver(true);
         const newPoints = points + 5;

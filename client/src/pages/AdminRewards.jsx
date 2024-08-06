@@ -17,6 +17,7 @@ import {
   Modal,
   LoadingOverlay,
   rem,
+  Image,
   Select,
   MultiSelect,
   Alert,
