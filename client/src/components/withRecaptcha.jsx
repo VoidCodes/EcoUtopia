@@ -1,4 +1,5 @@
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import React from 'react';
 
 const withRecaptcha = (Component) => (props) => {
   return (
