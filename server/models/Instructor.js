@@ -31,8 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Instructor.associate = (models) => {
-        Instructor.hasOne(models.Settings, { foreignKey: 'instructor_id' });
-    }
+        Instructor.hasMany(models.Course, { foreignKey: 'instructor_id' });
+    };
 
     return Instructor;
 };
