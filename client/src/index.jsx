@@ -43,6 +43,11 @@ import OrderDetails from './pages/Orders/OrderDetails.jsx';
 import AdminOrders from './pages/Orders/AdminOrders.jsx';
 import Success from './pages/Orders/Success.jsx';
 
+//rewards
+import Rewards from './pages/Rewards/ViewRewards.jsx';
+import AdminRewards from './pages/Rewards/AdminRewards.jsx';
+import CreateReward from './pages/Rewards/CreateReward.jsx';
+import EditReward from './pages/Rewards/EditReward.jsx';
 
 import {
   BrowserRouter,
@@ -124,6 +129,11 @@ function Main() {
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/success" element={<Success />} />
+
+        <Route path="/rewards" element={<Rewards />} />
+        <Route path="/admin/rewards" element={<AdminRewards />} />
+        <Route path="/admin/create-reward" element={<CreateReward />} />
+        <Route path="/admin/edit-reward/:rewardId" element={<EditReward />} />
       </Routes>
     </>
   )
