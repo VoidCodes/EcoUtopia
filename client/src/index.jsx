@@ -50,7 +50,7 @@ import Success from './pages/Orders/Success.jsx';
 import Rewards from './pages/Rewards/ViewRewards.jsx';
 import AdminRewards from './pages/Rewards/AdminRewards.jsx';
 import CreateReward from './pages/Rewards/CreateReward.jsx';
-import EditReward from './pages/Rewards/EditReward.jsx';
+import EditReward from './pages/Rewards/EditRewards.jsx';
 
 import {
   BrowserRouter,
