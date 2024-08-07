@@ -34,7 +34,7 @@ app.post("/upload", (req, res) => {
         .then((result) => {
             //console.timeEnd("Upload Time - Success");
             res.status(200).json({ message: "Success", result });
-            console.log("File uploaded successfully.");
+            console.log("WHY ARE YOU NOT LOGGING AAAA");
         })
         .catch((error) => {
             //console.timeEnd("Upload Time - Error");
@@ -50,7 +50,7 @@ const userRoute = require('./routes/user');
 const ordersRoute = require('./routes/orders');
 const paymentRoute = require('./routes/payment');
 const postsRoute = require('./routes/post');
-const rewardsRoute = require('./routes/rewards'); // Import rewards routes
+const rewardsRoute = require('./routes/rewards'); // Remove this line
 
 // Translation logic
 const translateText = async (text, targetLanguage) => {
@@ -92,13 +92,13 @@ const handleTranslation = async (req, res) => {
     }
 };
 
+
 // Define the translate route
 app.post('/api/translate', handleTranslation);
 
-// Register routes
 app.use("/courses", courseRoute);
 app.use('/user', userRoute);
-app.use('/rewards', rewardsRoute); // Add rewards routes here
+app.use('/rewards', rewardsRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use("/orders", ordersRoute); 
 app.use("/payment", paymentRoute);
