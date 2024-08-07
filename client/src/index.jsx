@@ -24,12 +24,14 @@ import ResetPassword from './pages/Accounts/ResetPassword.jsx';
 import PasswordResetSuccess from './pages/Accounts/ResetPasswordSuccess.jsx';
 import AccountManagement from './pages/Accounts/AccountManagement.jsx';
 import AccountActivation from './pages/Accounts/AccountActivation.jsx';
+
 //courses
 import Courses from './pages/Courses/Courses.jsx';
 import ViewCourse from './pages/Courses/ViewCourse.jsx';
 import AdminCourses from './pages/Courses/AdminCourses.jsx';
 import CreateCourse from './pages/Courses/CreateCourse.jsx';
 import EditCourse from './pages/Courses/EditCourse.jsx';
+
 //forum
 import Posts from './pages/Forum/Posts.jsx';
 import CreatePost from './pages/Forum/CreatePost.jsx';
@@ -37,6 +39,7 @@ import EditPost from './pages/Forum/EditPost.jsx';
 import PostDetails from './pages/Forum/PostDetails.jsx';
 import AdminPostsTable from './pages/Forum/PostsTable.jsx';
 import ImagePage from './pages/Forum/ImagePage.jsx';
+
 //orders
 import Orders from './pages/Orders/Orders.jsx';
 import OrderDetails from './pages/Orders/OrderDetails.jsx';
@@ -99,7 +102,7 @@ function Main() {
         <Route path="/" element={<App />} />
         
         <Route path="/test" element={<TestPage />} />
-
+        //accounts
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
@@ -129,7 +132,7 @@ function Main() {
         <Route path="/orderdetails/:orderId" element={<OrderDetails />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/success" element={<Success />} />
-
+        {/* Rewards */}
         <Route path="/rewards" element={<Rewards />} />
         <Route path="/admin/rewards" element={<AdminRewards />} />
         <Route path="/admin/create-reward" element={<CreateReward />} />

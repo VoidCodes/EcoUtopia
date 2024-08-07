@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize) => {
     const Rewards = sequelize.define("Rewards", {
         reward_id: {
             type: DataTypes.INTEGER,
@@ -22,12 +22,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false
         },
-
+        reward_image: {
+            type: DataTypes.STRING(500), // URL length adjustment
+            allowNull: true
+        }
     }, {
         tableName: 'rewards'
     });
+
     Rewards.associate = (models) => {
-        Rewards.belongsTo(models.Resident, { foreignKey: 'resident_id'})
+        Rewards.belongsTo(models.Resident, { foreignKey: 'resident_id' });
     };
 
     return Rewards;
