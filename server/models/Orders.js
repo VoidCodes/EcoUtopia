@@ -25,6 +25,26 @@ module.exports = (sequelize, DataTypes) => {
       payment_intent: {
         type: DataTypes.STRING, 
         allowNull: true
+      },
+      resident_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      course_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      order_date: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      order_status: {
+        type: DataTypes.ENUM('Upcoming', 'Completed', 'Refunded', 'Pending'),
+        allowNull: false
+      },
+      payment_intent: {
+        type: DataTypes.STRING, 
+        allowNull: true
       }
 
     }, {
@@ -37,4 +57,3 @@ module.exports = (sequelize, DataTypes) => {
   
     return Orders;
   };
-  
