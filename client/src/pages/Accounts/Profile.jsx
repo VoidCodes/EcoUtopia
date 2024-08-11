@@ -132,6 +132,11 @@ function Profile() {
       const response = await axios.post("/user/profile-picture", formData, {
         headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
       });
+      // cache busting
+      /*setProfileData((prevData) => ({
+        ...prevData,
+        profilePic: `${response.data.fileName}?t=${new Date().getTime()}`,
+      }));*/
       setProfileData((prevData) => ({
         ...prevData,
         profilePic: response.data.fileName,
