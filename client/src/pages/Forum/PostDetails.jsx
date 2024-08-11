@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faTwitter, faLinkedin, faWhatsapp, faTelegram } from '@fortawesome/free-brands-svg-icons';
 import { FacebookShareButton, TwitterShareButton, LinkedinShareButton, WhatsappShareButton, TelegramShareButton } from 'react-share';
+import { Container, Paper, Text, Title, Image, AspectRatio, Select, Group, Button, Textarea, Divider, Loader, Center, Avatar } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 const PostDetails = () => {
   const { id } = useParams();
@@ -17,6 +19,7 @@ const PostDetails = () => {
   const [loading, setLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [translatedContent, setTranslatedContent] = useState('');
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -62,6 +65,7 @@ const PostDetails = () => {
       formData.append("content", newComment);
       formData.append("resident_id", user?.resident?.resident_id);
       formData.append("residentName", user?.resident?.name);
+      formData.append("residentAvatar", user?.resident?.profile_pic);
       formData.append("post_id", id);
 
       const response = await axios.post(`http://localhost:3001/posts/${id}/comments`, formData, {
@@ -122,11 +126,10 @@ const PostDetails = () => {
     }
   };
 
-  const handleLanguageChange = (event) => {
-    const selectedLang = event.target.value;
-    setSelectedLanguage(selectedLang);
+  const handleLanguageChange = (value) => {
+    setSelectedLanguage(value);
     if (post) {
-      translateContent(post.content, selectedLang);
+      translateContent(post.content, value);
     }
   };
 
@@ -136,11 +139,19 @@ const PostDetails = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <Center style={{ height: '100vh' }}>
+        <Loader />
+      </Center>
+    );
   }
 
   if (!post) {
-    return <p>Post not found.</p>;
+    return (
+      <Container>
+        <Text align="center">Post not found.</Text>
+      </Container>
+    );
   }
 
   const isImageUrl = (url) => {
@@ -153,45 +164,60 @@ const PostDetails = () => {
   const customMessage = "Check out this amazing post I found!%0A";
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <label htmlFor="language">Select Language:</label>
-        <select id="language" value={selectedLanguage} onChange={handleLanguageChange}>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="zh">中文</option>
-          <option value="ja">日本語</option>
-          <option value="ko">한국어</option>
-          <option value="id">Bahasa Indonesia</option>
-          <option value="ms">Bahasa Melayu</option>
-          <option value="hi">हिन्दी</option>
-        </select>
-      </div>
-
-      <div style={{ marginBottom: '10px', fontSize: '1.1em' }}>
-        <strong>Creator: {post.residentName}</strong>
-      </div>
-      <h1 style={{ marginBottom: '5px' }}>{post.title}</h1>
-      {post.tags && <p style={{ fontStyle: 'italic', marginBottom: '10px' }}>Tags: {post.tags}</p>}
-      {post.imageUrl && (
-        isImageUrl(post.imageUrl) ? (
-          <img src={`${post.imageUrl}`} alt={post.title} style={{ width: '400px', height: '400px', objectFit: 'cover', marginBottom: '10px' }} />
-        ) : (
-          <video
-            controls
-            style={{ width: '400px', height: '400px', objectFit: 'cover', marginBottom: '10px' }}
-            onEnded={(e) => { e.target.currentTime = 0; e.target.play(); }}
-          >
-            <source src={`${post.imageUrl}`} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )
-      )}
-      <p>{selectedLanguage === 'en' ? post.content : translatedContent}</p>
-      <div style={{ marginTop: '20px' }}>
-        <h2>Share this post:</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+    console.log('Post:', post),
+    <Container size="sm">
+      <Paper withBorder shadow="md" p="md" mt="md">
+        <Group position="apart" mb="md">
+          <Group>
+            <Avatar src={post.residentAvatar} alt={post.residentName} radius="xl" />
+            <div>
+              <Text size="sm" color="dimmed">{post.residentName}</Text>
+              <Text size="xs" color="dimmed">{formatDate(post.createdAt)}</Text>
+            </div>
+          </Group>
+          <Select
+            data={[
+              { value: 'en', label: 'English' },
+              { value: 'es', label: 'Español' },
+              { value: 'fr', label: 'Français' },
+              { value: 'zh', label: '中文' },
+              { value: 'ja', label: '日本語' },
+              { value: 'ko', label: '한국어' },
+              { value: 'id', label: 'Bahasa Indonesia' },
+              { value: 'ms', label: 'Bahasa Melayu' },
+              { value: 'hi', label: 'हिन्दी' },
+            ]}
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+            style={{ maxWidth: 150 }}
+            size="sm"
+          />
+        </Group>
+        <Title order={1} align="center" mb="sm">{post.title}</Title>
+        {post.tags && <Text align="center" size="sm" italic mb="md">Tags: {post.tags}</Text>}
+        {post.imageUrl && (
+          isImageUrl(post.imageUrl) ? (
+            <Image
+              src={`${post.imageUrl}`}
+              alt={post.title}
+              radius="md"
+              mb="md"
+              height={isMobile ? 200 : 400}
+              fit="cover"
+            />
+          ) : (
+            <AspectRatio ratio={16 / 9} mb="md">
+              <video controls>
+                <source src={post.imageUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </AspectRatio>
+          )
+        )}
+        <Text align="justify" size="md" mb="md">{selectedLanguage === 'en' ? post.content : translatedContent}</Text>
+        <Divider my="md" />
+        <Title order={2} align="center" mb="sm">Share this post:</Title>
+        <Group position="center" spacing="md" mb="md">
           <FacebookShareButton url={postUrl} quote={postContent} className="share-button">
             <FontAwesomeIcon icon={faFacebook} size="2x" />
           </FacebookShareButton>
@@ -207,51 +233,73 @@ const PostDetails = () => {
           <TelegramShareButton url={postUrl} title={customMessage} className="share-button">
             <FontAwesomeIcon icon={faTelegram} size="2x" />
           </TelegramShareButton>
-        </div>
-      </div>
-      <h3>Comments:</h3>
-      {comments.length > 0 ? (
-        comments.map(comment => (
-          <div key={comment.id} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
-            {editingCommentId === comment.id ? (
-              <form onSubmit={updateComment}>
-                <textarea
-                  value={editingContent}
-                  onChange={(e) => setEditingContent(e.target.value)}
-                  rows="4"
-                  cols="50"
-                  style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-                />
-                <button type="submit">Save</button>
-              </form>
-            ) : (
-              <>
-                <p>{comment.content}</p>
-                <p>
-                  <strong>By: {comment.Resident.name}</strong> on {formatDate(comment.createdAt)}
-                </p>
-                {user && user.resident && comment.resident_id === user.resident.resident_id && (
-                  <button onClick={() => handleUpdateComment(comment.id, comment.content)}>Edit</button>
-                )}
-              </>
-            )}
-          </div>
-        ))
-      ) : (
-        <p>No comments yet.</p>
-      )}
-      <form onSubmit={handleCreateComment} style={{ marginTop: '20px' }}>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          rows="4"
-          cols="50"
-          style={{ display: 'block', width: '100%', marginBottom: '10px' }}
-        />
-        <button type="submit">Post Comment</button>
-      </form>
-    </div>
+        </Group>
+        <Divider my="md" />
+        <Title order={2} mb="sm">Comments:</Title>
+        {comments.length > 0 ? (
+          comments.map(comment => (
+            <Paper key={comment.id} withBorder shadow="sm" p="sm" mb="md">
+              {editingCommentId === comment.id ? (
+                <form onSubmit={updateComment}>
+                  <Textarea
+                    value={editingContent}
+                    onChange={(e) => setEditingContent(e.target.value)}
+                    rows="4"
+                    autosize
+                    minRows={3}
+                    maxRows={6}
+                    mb="sm"
+                  />
+                  <Button type="submit" size="xs" fullWidth>
+                    Save
+                  </Button>
+                </form>
+              ) : (
+                <>
+                  <Text mb="sm">{comment.content}</Text>
+                  <Group position="apart">
+                    <Group spacing="xs">
+                      <Avatar src={comment.Resident.profile_pic} alt={comment.Resident.name} radius="xl" size="sm" />
+                      <Text size="sm" c="dimmed">{comment.Resident.name}</Text>
+                    </Group>
+                    <Text size="xs" c="dimmed">{formatDate(comment.createdAt)}</Text>
+                  </Group>
+                  {user && user.resident && comment.resident_id === user.resident.resident_id && (
+                    <Button
+                      onClick={() => handleUpdateComment(comment.id, comment.content)}
+                      variant="outline"
+                      color="blue"
+                      size="xs"
+                      mt="xs"
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </>
+              )}
+            </Paper>
+          ))
+        ) : (
+          <Text align="center">No comments yet.</Text>
+        )}
+        <Divider my="md" />
+        <form onSubmit={handleCreateComment}>
+          <Textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            rows="4"
+            autosize
+            minRows={3}
+            maxRows={6}
+            mb="sm"
+          />
+          <Button type="submit" fullWidth>
+            Post Comment
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 
