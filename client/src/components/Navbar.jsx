@@ -49,13 +49,33 @@ function Navbar() {
           });
           setStaffDetails(response.data);
           setProfilePicUrl(response.data.staff.profile_pic);
-          console.log('Staff data:', response.data);
+          //console.log('Staff data:', response.data);
         } catch (error) {
           console.error('Error fetching staff data:', error);
         }
       }
     };
     fetchStaffData();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchInstructorData = async () => {
+      if (user && user.role === 'INSTRUCTOR') {
+        try {
+          const response = await axios.get(`/user/${user.user_id}`, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          });
+          setStaffDetails(response.data);
+          setProfilePicUrl(response.data.instructor.profile_pic);
+          console.log('Instructor data:', response.data);
+        } catch (error) {
+          console.error('Error fetching instructor data:', error);
+        }
+      }
+    };
+    fetchInstructorData();
   }, [user]);
     
 
@@ -71,7 +91,7 @@ function Navbar() {
 
   return (
     <AppShell header={{ height: 50 }} navbar={{ width: 200, breakpoint: "xl" }}>
-      <AppShell.Header style={{ height: 50, backgroundColor: isStaff ? "#00A0D2" : "#0F9D58" }}>
+      <AppShell.Header style={{ height: 50, backgroundColor: isStaff ? "#00A0D2" : isInstructor ? "#23cf9b" : "#0F9D58" }}>
         <Flex align="center" justify="space-between" style={{ height: "100%" }}>
           <Flex align="center">
             <Anchor href="/" style={{ textDecoration: "none" }}>
