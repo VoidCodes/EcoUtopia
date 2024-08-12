@@ -121,13 +121,19 @@ function App() {
         </Box>
         <Navbar />
         {/* CTA Buttons */}
-        <Group position="center" mt="xl" spacing="xl">
+        {/*<Group position="center" mt="xl" spacing="xl">
           <Anchor href="/test" style={{ textDecoration: "none" }}>
             <Button color="deepBlue" radius="xl">
               Test
             </Button>
           </Anchor>
-        </Group>
+        </Group>*/}
+        {/* Footer Section */}
+        <Box mt="xl">
+          <Text align="center" size="lg">
+            &copy; {new Date().getFullYear()} EcoUtopia. All rights reserved.
+          </Text>
+        </Box>
       </Container>
     </Container>
   )

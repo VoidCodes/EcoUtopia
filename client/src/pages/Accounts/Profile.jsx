@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Button,
   Container,
-  Paper,
   Text,
   Title,
   Avatar,
   Box,
   Grid,
   TextInput,
-  FileInput,
+  Card,
 } from "@mantine/core";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -20,22 +19,25 @@ import LoaderComponent from "../../components/Loader.jsx";
 function Profile() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const { paramId } = useParams(); // Get paramId from route parameters
+  const { paramId } = useParams();
 
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     mobileNumber: "",
-    profile_pic_url: "",
+    profilePic: "",
+    backgroundImage: "",
     role: "",
   });
   const [loading, setLoading] = useState(true);
+  const profilePicInputRef = useRef(null);
+  const backgroundImageInputRef = useRef(null);
 
   useEffect(() => {
     let timer = setTimeout(() => {
       setLoading(false);
-    }, 300); // Display loader for at least 0.3 seconds
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);
@@ -50,14 +52,12 @@ function Profile() {
 
         let response;
         if (user.user_id === parseInt(paramId)) {
-          // Fetch the personal profile data
           response = await axios.get(`/user/${user.user_id}`, {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
             },
           });
         } else if (user.role === "STAFF") {
-          // Fetch the profile data of the user with the given paramId
           response = await axios.get(`/user/${paramId}`, {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -68,8 +68,6 @@ function Profile() {
         }
 
         const { user: userData, resident, staff, instructor } = response.data;
-        console.log(userData);
-        console.log(userData.role);
 
         if (userData.role === "RESIDENT" && resident) {
           setProfileData({
@@ -78,6 +76,7 @@ function Profile() {
             lastName: resident.name.split(" ")[1] || "",
             mobileNumber: resident.mobile_num || "",
             profilePic: resident.profile_pic || "",
+            backgroundImage: resident.background_pic || "",
             role: "RESIDENT",
           });
         } else if (userData.role === "STAFF" && staff) {
@@ -87,6 +86,7 @@ function Profile() {
             lastName: staff.name.split(" ")[1] || "",
             mobileNumber: staff.mobilenum || "",
             profilePic: staff.profile_pic || "",
+            backgroundImage: staff.background_pic || "",
             role: "STAFF",
           });
         } else if (userData.role === "INSTRUCTOR" && instructor) {
@@ -96,6 +96,7 @@ function Profile() {
             lastName: instructor.name.split(" ")[1] || "",
             mobileNumber: instructor.mobilenum || "",
             profilePic: instructor.profile_pic || "",
+            backgroundImage: instructor.background_pic || "",
             role: "INSTRUCTOR",
           });
         } else {
@@ -105,6 +106,7 @@ function Profile() {
             lastName: userData.lastName || "",
             mobileNumber: userData.mobileNumber || "",
             profilePic: userData.profile_pic || "",
+            backgroundImage: userData.background_pic || "",
             role: userData.role || "",
           });
         }
@@ -129,15 +131,30 @@ function Profile() {
     formData.append("userId", paramId);
 
     try {
-      const response = await axios.post("/user/profile-picture", formData, {
+      await axios.post("/user/profile-picture", formData, {
         headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
       });
-      setProfileData((prevData) => ({
-        ...prevData,
-        profilePic: response.data.fileName,
-      }));
+      window.location.reload(); // Reload the page after the upload
     } catch (error) {
       console.error("Error uploading profile picture:", error);
+    }
+  };
+
+  const handleBackgroundImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("backgroundImage", file);
+    formData.append("userId", paramId);
+
+    try {
+      await axios.post("/user/background-image", formData, {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      });
+      window.location.reload(); // Reload the page after the upload
+    } catch (error) {
+      console.error("Error uploading background image:", error);
     }
   };
 
@@ -147,46 +164,117 @@ function Profile() {
 
   return (
     <Container size="md" my={40}>
-      <Paper withBorder shadow="md" p={30} radius="md">
-        <Grid align="center">
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Card.Section>
+          <Box style={{ position: "relative", width: "100%", height: "50vh" }}>
+            {profileData.backgroundImage ? (
+              <img
+                src={profileData.backgroundImage}
+                alt="Background"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                }}
+              />
+            ) : (
+              <img
+                src={"https://ecoutopia-bucket.s3.ap-southeast-1.amazonaws.com/eco-placeholder-image-cropped.jpg"}
+                alt="Background"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                }}
+              />
+            )}
+            <Box
+              style={{
+                position: "absolute",
+                bottom: "-8rem",
+                left: "29rem",
+                transform: "translateX(-50%)",
+                zIndex: 1,
+              }}
+            >
+              {profileData.profilePic ? (
+                <img
+                  src={profileData.profilePic}
+                  alt="Profile"
+                  style={{
+                    width: "250px", // Adjust as needed
+                    height: "250px", // Ensure it matches width for a perfect circle
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: "3px solid white",
+                    marginRight: "38rem",
+                  }}
+                />
+              ) : (
+                <img
+                  src={"https://ecoutopia-bucket.s3.ap-southeast-1.amazonaws.com/eco-Pfpimage.jpg"}
+                  alt="Profile"
+                  style={{
+                    width: "250px", // Adjust as needed
+                    height: "250px", // Ensure it matches width for a perfect circle
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    marginRight: "38rem",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+        </Card.Section>
+        <Grid align="center" mt="md">
           <Grid.Col span={4} style={{ textAlign: "center" }}>
             <label htmlFor="profilePicInput">
-              <Avatar
-                src={
-                  profileData.profilePic
-                    ? `${import.meta.env.VITE_FILE_BASE_URL}${
-                        profileData.profilePic
-                      }`
-                    : ""
-                }
-                size={270}
-                radius={180}
-                style={{ cursor: "pointer", marginBottom: "1rem" }}
-              >
-                {!profileData.profilePic && <IconPhoto size={50} />}
-              </Avatar>
               <input
                 id="profilePicInput"
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
                 onChange={handleProfilePicChange}
+                ref={profilePicInputRef}
               />
-              <Button color="blue" variant="filled" type="submit">
-                Upload Image
-                {/*<input
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  onChange={handleProfilePicChange}
-                />*/}
-                <FileInput
-                  accept="image/*"
-                  onChange={handleProfilePicChange}
-                  type="file"
-                  style={{ display: "none" }}
-                />
+              <Button
+                color="blue"
+                variant="filled"
+                onClick={() => profilePicInputRef.current.click()}
+                fullWidth
+                mt="md"
+              >
+                Upload Profile Image
               </Button>
+            </label>
+            <label htmlFor="backgroundImageInput">
+              <Button
+                color="gray"
+                variant="filled"
+                onClick={() => backgroundImageInputRef.current.click()}
+                fullWidth
+                mt="md"
+              >
+                Upload Background Image
+              </Button>
+              <input
+                id="backgroundImageInput"
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleBackgroundImageChange}
+                ref={backgroundImageInputRef}
+              />
             </label>
             <Button
               variant="outline"
@@ -200,9 +288,9 @@ function Profile() {
               variant="outline"
               fullWidth
               mt="md"
-              onClick={() => navigate("/payment-methods")}
+              onClick={() => navigate(`/${paramId}/reward`)}
             >
-              Payment Methods
+              Redeemed Rewards
             </Button>
           </Grid.Col>
           <Grid.Col span={8}>
@@ -255,6 +343,7 @@ function Profile() {
             </Box>
           </Grid.Col>
         </Grid>
+
         <Box mt="xl" style={{ textAlign: "center" }}>
           <Text size="xl" weight={500}>
             Membership Information
@@ -275,7 +364,7 @@ function Profile() {
         >
           Logout
         </Button>
-      </Paper>
+      </Card>
     </Container>
   );
 }

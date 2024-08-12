@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        background_pic: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         ecoPoints: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -54,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
 
     Resident.associate = (models) => {
         Resident.hasOne(models.Settings, { foreignKey: 'resident_id' });
+    }
+
+    Resident.associate = (models) => {
+        Resident.hasMany(models.Comment, { foreignKey: 'resident_id' });
     }
 
     return Resident;

@@ -578,27 +578,23 @@ router.post('/profile-picture', uploadfile.single('profilePic'), async (req, res
     try {
         const resident = await Resident.findOne({ where: { user_id: userId } });
         const staff = await Staff.findOne({ where: { user_id: userId } });
+        const instructor = await Instructor.findOne({ where: { user_id: userId } });
 
         if (resident) {
-            // Delete old profile picture if exists
-            if (resident.profile_pic && fs.existsSync(`./public/uploads/${resident.profile_pic}`)) {
-                fs.unlinkSync(`./public/uploads/${resident.profile_pic}`);
-            }
-
             // Update new profile picture filename in the database
-            resident.profile_pic = req.file.filename;
+            resident.profile_pic = req.file.location;
             await resident.save();
             res.send({ message: 'Resident profile picture updated successfully', fileName: req.file.filename });
         } else if (staff) {
-            // Delete old profile picture if exists
-            if (staff.profile_pic && fs.existsSync(`./public/uploads/${staff.profile_pic}`)) {
-                fs.unlinkSync(`./public/uploads/${staff.profile_pic}`);
-            }
-
             // Update new profile picture filename in the database
-            staff.profile_pic = req.file.filename;
+            staff.profile_pic = req.file.location;
             await staff.save();
             res.send({ message: 'Staff profile picture updated successfully', fileName: req.file.filename });
+        } else if (instructor) {
+            // Update new profile picture filename in the database
+            instructor.profile_pic = req.file.location;
+            await instructor.save();
+            res.send({ message: 'Instructor profile picture updated successfully', fileName: req.file.filename });
         } else {
             res.status(404).send({ message: 'User not found' });
         }
@@ -607,24 +603,28 @@ router.post('/profile-picture', uploadfile.single('profilePic'), async (req, res
     }
 });
 
-// Route to delete a profile picture
-router.delete('/profile-picture', async (req, res) => {
-    const userId = req.body.userId; // Make sure the user is authenticated
+// Route to upload or update a background image
+router.post('/background-image', uploadfile.single('backgroundImage'), async (req, res) => {
+    const userId = req.body.userId; // Ensure the user is authenticated
     try {
-        const user = await User.findByPk(userId);
-        if (user && user.profilePic) {
-            // Remove file from filesystem
-            const filePath = `./uploads/${user.profilePic}`;
-            if (fs.existsSync(filePath)) {  
-                fs.unlinkSync(filePath);
-            }
+        const resident = await Resident.findOne({ where: { user_id: userId } });
+        const staff = await Staff.findOne({ where: { user_id: userId } });
+        const instructor = await Instructor.findOne({ where: { user_id: userId } });
 
-            // Update database
-            user.profilePic = null;
-            await user.save();
-            res.send({ message: 'Profile picture removed successfully' });
+        if (resident) {
+            resident.background_pic = req.file.location;
+            await resident.save();
+            res.send({ message: 'Resident background image updated successfully', fileName: req.file.location });
+        } else if (staff) {
+            staff.background_pic = req.file.location;
+            await staff.save();
+            res.send({ message: 'Staff background image updated successfully', fileName: req.file.location });
+        } else if (instructor) {
+            instructor.background_pic = req.file.location;
+            await instructor.save();
+            res.send({ message: 'Instructor background image updated successfully', fileName: req.file.location });
         } else {
-            res.status(404).send({ message: 'Profile picture not found or already removed' });
+            res.status(404).send({ message: 'User not found' });
         }
     } catch (error) {
         res.status(500).send({ message: 'Server error', error: error.message });
