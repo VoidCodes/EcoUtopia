@@ -26,6 +26,7 @@ function CreateCourse() {
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [instructors, setInstructors] = useState({});
   const [error, setError] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -34,9 +35,8 @@ function CreateCourse() {
     course_price: "",
     course_instructor: "",
     course_type: "",
-    course_date: new Date(),
-    course_start_time: "",
-    course_end_time: "",
+    course_start_date: new Date(),
+    course_end_date: new Date(),
     course_capacity: "",
     course_image_url: "",
   });
@@ -56,22 +56,20 @@ function CreateCourse() {
   const validateForm = () => {
     const errors = {};
     if (!formData.course_name) errors.course_name = "Course name is required";
-    if (!formData.course_description)
-      errors.course_description = "Course description is required";
-    if (!formData.course_price)
-      errors.course_price = "Course price is required";
-    if (!formData.course_instructor)
-      errors.course_instructor = "Course instructor is required";
+    if (!formData.course_description) errors.course_description = "Course description is required";
+    if (!formData.course_price) errors.course_price = "Course price is required";
+    if (!formData.course_instructor) errors.course_instructor = "Course instructor is required";
     if (!formData.course_type) errors.course_type = "Course type is required";
-    if (!formData.course_date) errors.course_date = "Course date is required";
-    if (!formData.course_start_time)
-      errors.course_start_time = "Course start time is required";
-    if (!formData.course_end_time)
-      errors.course_end_time = "Course end time is required";
-    if (!formData.course_capacity)
-      errors.course_capacity = "Course capacity is required";
-    if (!formData.course_image_url)
-      errors.course_image_url = "Course image is required";
+    if (!formData.course_start_date) errors.course_start_time = "Course start date is required";
+    if (!formData.course_end_date) errors.course_end_time = "Course end date is required";
+    if (!formData.course_capacity) errors.course_capacity = "Course capacity is required";
+    if (!formData.course_image_url) errors.course_image_url = "Course image is required";
+
+     // Custom validation for start and end dates
+     if (new Date(formData.course_start_date) >= new Date(formData.course_end_date)) {
+      errors.course_start_date = "Start date must be before end date";
+      errors.course_end_date = "End date must be after start date";
+    }
     return errors;
   };
 
@@ -84,11 +82,13 @@ function CreateCourse() {
     formDataToSend.append("course_instructor", formData.course_instructor);
     formDataToSend.append("course_type", formData.course_type);
     formDataToSend.append(
-      "course_date",
-      formData.course_date.toISOString().slice(0, 19).replace("T", " ")
+      "course_start_date",
+      formData.course_start_date.toISOString().slice(0, 19).replace("T", " ")
     );
-    formDataToSend.append("course_start_time", formData.course_start_time);
-    formDataToSend.append("course_end_time", formData.course_end_time);
+    formDataToSend.append(
+      "course_end_date",
+      formData.course_end_date.toISOString().slice(0, 19).replace("T", " ")
+    );
     formDataToSend.append("course_capacity", formData.course_capacity);
     formDataToSend.append("course_image_url", formData.course_image_url);
 
@@ -137,6 +137,23 @@ function CreateCourse() {
   };
 
   useEffect(() => {
+    const fetchInstructors = async () => {
+      try {
+        const response = await axios.get("/instructor/getInstructors");
+        console.log("Instructors:", response.data);
+        const transformedInstructors = response.data.map((instructor) => ({
+          value: instructor.instructorid, // or any unique identifier
+          label: instructor.name, // or any display name
+        }));
+        setInstructors(transformedInstructors);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+    fetchInstructors();
+  }, []);
+
+  useEffect(() => {
     document.title = "Create Course - EcoUtopia";
   }, []);
 
@@ -149,8 +166,9 @@ function CreateCourse() {
       </Container>
     );
   }
-
+  
   return (
+    console.log(`Instructors: ${JSON.stringify(instructors)}`),
     <>
       {/*<AdminNav /> */}
       <Container size="xl" style={{ maxWidth: "800px", marginTop: "40px" }}>
@@ -229,6 +247,28 @@ function CreateCourse() {
                 },
               })}
             />
+            {/*<Select
+              label="Course Instructor"
+              placeholder="Select course instructor"
+              data={instructors.name}
+              value={formData.course_instructor}
+              style={{ marginBottom: rem(1) }}
+              onChange={(value) =>
+                setFormData({ ...formData, course_instructor: value })
+              }
+              error={formErrors.course_instructor}
+              styles={(theme) => ({
+                input: {
+                  borderColor: formErrors.course_instructor
+                    ? theme.colors.red[7]
+                    : undefined,
+                  color: formErrors.course_instructor
+                    ? theme.colors.red[7]
+                    : undefined,
+                },
+              })
+              }
+            />*/}
             <NumberInput
               label="Course Price"
               placeholder="Enter course price"
@@ -273,61 +313,47 @@ function CreateCourse() {
               })}
             />
             <DateTimePicker
-              label="Course Date"
+              label="Course Start Date"
               placeholder="Enter course date"
               valueFormat="YYYY-MM-DD HH:mm:ss"
-              value={new Date(formData.course_date)}
+              value={new Date(formData.course_start_date)}
               onChange={(date) =>
-                setFormData({ ...formData, course_date: date })
+                setFormData({ ...formData, course_start_date: date })
               }
               style={{ marginBottom: rem(1) }}
-              error={formErrors.course_date}
+              error={formErrors.course_start_date}
               styles={(theme) => ({
                 input: {
-                  borderColor: formErrors.course_date
+                  borderColor: formErrors.course_start_date
                     ? theme.colors.red[7]
                     : undefined,
-                  color: formErrors.course_date
+                  color: formErrors.course_start_date
                     ? theme.colors.red[7]
                     : undefined,
                 },
               })}
             />
-            <TextInput
-              label="Start Time"
-              placeholder="Enter start time"
-              value={formData.course_start_time}
-              style={{ marginBottom: rem(1) }}
-              onChange={(event) =>
-                setFormData({
-                  ...formData,
-                  course_start_time: event.target.value,
-                })
+            <DateTimePicker
+              label="Course End Date"
+              placeholder="Enter course date"
+              valueFormat="YYYY-MM-DD HH:mm:ss"
+              value={new Date(formData.course_end_date)}
+              onChange={(date) =>
+                setFormData({ ...formData, course_end_date: date })
               }
-              error={formErrors.course_start_time}
+              style={{ marginBottom: rem(1) }}
+              error={formErrors.course_end_date}
               styles={(theme) => ({
                 input: {
-                  borderColor: formErrors.course_start_time
+                  borderColor: formErrors.course_end_date
+
                     ? theme.colors.red[7]
                     : undefined,
-                  color: formErrors.course_start_time
+                  color: formErrors.course_end_date
                     ? theme.colors.red[7]
                     : undefined,
                 },
               })}
-            />
-            <TextInput
-              label="End Time"
-              placeholder="Enter end time"
-              value={formData.course_end_time}
-              style={{ marginBottom: rem(1) }}
-              onChange={(event) =>
-                setFormData({
-                  ...formData,
-                  course_end_time: event.target.value,
-                })
-              }
-              error={formErrors.course_end_time}
             />
             {/*<TimeInput
                         label="Start Time"

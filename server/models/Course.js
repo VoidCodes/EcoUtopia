@@ -27,16 +27,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(10),
             allowNull: false
         },
-        course_date: {
+        course_start_date: {
             type: DataTypes.DATE,
             allowNull: false
         },
-        course_start_time: {
-            type: DataTypes.TIME,
-            allowNull: false
-        },
-        course_end_time: {
-            type: DataTypes.TIME,
+        course_end_date: {
+            type: DataTypes.DATE,
             allowNull: false
         },
         course_capacity: {
@@ -52,6 +48,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'draft'
         },
+        // Foreign key
+        instructorid: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
 
     }, {
         tableName: 'courses',

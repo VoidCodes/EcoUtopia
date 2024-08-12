@@ -1,6 +1,6 @@
 const express = require("express");
 const yup = require("yup");
-const { Course, Orders, Sequelize } = require("../models");
+const { Course, Orders, Instructor, Sequelize } = require("../models");
 const uploadFile = require('../middleware/uploadfile');
 const router = express.Router();
 
@@ -16,36 +16,29 @@ const courseSchema = yup.object().shape({
       ["Online", "Physical"],
       'Course type must be either "Online" or "Physical"'
     ), // "Online" or "Physical"
-  course_date: yup
-    .date()
-    .required("Course date is required")
-    .min(new Date(), "Course date cannot be in the past") // Ensure the date is not in the past
-    .typeError("Invalid date format. Please use YYYY-MM-DD."),
-  course_start_time: yup
-    .string() // "HH:MM:SS"
-    .required("Course start time is required")
-    .matches(
-      /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-      "Invalid time format. Please use HH:MM (24-hour format)."
-    ),
-  course_end_time: yup
+    course_start_date: yup
     .string()
-    .required("Course end time is required")
+    .required("Course start date is required")
+    .matches(
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+      "Invalid datetime format. Please use YYYY-MM-DD HH:MM:SS."
+    ),
+  course_end_date: yup
+    .string()
+    .required("Course end date is required")
+    .matches(
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
+      "Invalid datetime format. Please use YYYY-MM-DD HH:MM:SS."
+    )
     .test(
       "end-time-after-start-time",
       "End time must be after start time",
       function (value) {
-        const startTime = this.parent.course_start_time;
-        if (!startTime || !value) return true; // Allow if either time is missing
-        return (
-          new Date(`2000-01-01 ${value}`) >
-          new Date(`2000-01-01 ${startTime}`)
-        );
+        const startTime = new Date(this.parent.course_start_date);
+        const endTime = new Date(value);
+        if (!startTime || !endTime) return true;
+        return endTime > startTime;
       }
-    )
-    .matches(
-      /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
-      "Invalid time format. Please use HH:MM (24-hour format)."
     ), // "HH:MM:SS"
   course_capacity: yup
     .number()
@@ -110,6 +103,19 @@ router.post("/create-course", uploadFile.single('course_image_url'), async (req,
     if (error instanceof Sequelize.ValidationError) {
       return res.status(400).json({ error: error.errors });
     }
+    res.status(400).json({ error: error.errors });
+  }
+});
+
+router.get('/publishedCourses', async (req, res) => {
+  try {
+    const courses = await Course.findAll({
+      where: {
+        course_status: 'published'
+      }
+    });
+    res.json(courses);
+  } catch (error) {
     res.status(400).json({ error: error.errors });
   }
 });
@@ -219,6 +225,42 @@ router.put("/update-course/:id", uploadFile.single('course_image_url'), async (r
     res.status(400).json({ error: error.errors });
   }
 });
+
+router.patch("/publishCourse/:id", async (req, res) => {
+  try {
+    const course = await Course.findByPk(req.params.id);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    await course.update({
+      //course_status: req.body.course_status,
+      course_status: 'published'
+    });
+    res.json(course);
+  } catch (error) {
+    res.status(400).json({ error: error.errors });
+  }
+})
+
+router.patch("/assignInstructor/:courseId", async (req, res) => {
+  const { instructorId } = req.body;
+  try {
+    const course = await Course.findByPk(req.params.courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    const instructor = await Instructor.findByPk(instructorId);
+    if (!instructor) {
+      return res.status(404).json({ error: "Instructor not found" });
+    }
+    course.instructorid = instructorId;
+    await course.save();
+    res.status(200).json({ message: "Instructor assigned successfully" });
+  } catch (error) {
+    console.error("Error assigning instructor:", error);
+    res.status(400).json({ error: error.errors });
+  }
+})
 
 router.delete("/deleteCourse/:id", async (req, res) => {
   try {

@@ -39,9 +39,8 @@ function EditCourse() {
         course_price: '',
         course_instructor: '',
         course_type: '',
-        course_date: new Date(),
-        course_start_time: '',
-        course_end_time: '',
+        course_start_date: '',
+        course_end_date: '',
         course_capacity: '',
         course_image_url: '', 
       });
@@ -61,9 +60,8 @@ function EditCourse() {
         if (!formData.course_price) errors.course_price = "Course price is required";
         if (!formData.course_instructor) errors.course_instructor = "Course instructor is required";
         if (!formData.course_type) errors.course_type = "Course type is required";
-        if (!formData.course_date) errors.course_date = "Course date is required";
-        if (!formData.course_start_time) errors.course_start_time = "Course start time is required";
-        if (!formData.course_end_time) errors.course_end_time = "Course end time is required";
+        if (!formData.course_start_date) errors.course_start_date = "Course start date is required";
+        if (!formData.course_end_date) errors.course_end_date = "Course end date is required";
         if (!formData.course_capacity) errors.course_capacity = "Course capacity is required";
         if (!formData.course_image_url) errors.course_image_url = "Course image is required";
         return errors;
@@ -77,9 +75,8 @@ function EditCourse() {
         formDataToSend.append('course_price', formData.course_price);
         formDataToSend.append('course_instructor', formData.course_instructor);
         formDataToSend.append('course_type', formData.course_type);
-        formDataToSend.append('course_date', daysjs(formData.course_date).format('YYYY-MM-DD HH:mm:ss'));
-        formDataToSend.append('course_start_time', formData.course_start_time);
-        formDataToSend.append('course_end_time', formData.course_end_time);
+        formDataToSend.append('course_start_date', daysjs(formData.course_date).format('YYYY-MM-DD HH:mm:ss'));
+        formDataToSend.append('course_end_date', daysjs(formData.course_date).format('YYYY-MM-DD HH:mm:ss'));
         formDataToSend.append('course_capacity', formData.course_capacity);
         formDataToSend.append('course_image_url', formData.course_image_url);
 
@@ -124,9 +121,8 @@ function EditCourse() {
                     course_price: fetchedCourse.course_price,
                     course_instructor: fetchedCourse.course_instructor,
                     course_type: fetchedCourse.course_type,
-                    course_date: fetchedCourse.course_date,
-                    course_start_time: fetchedCourse.course_start_time,
-                    course_end_time: fetchedCourse.course_end_time,
+                    course_start_date: fetchedCourse.course_start_date,
+                    course_end_date: fetchedCourse.course_end_date,
                     course_capacity: fetchedCourse.course_capacity,
                     course_image_url: fetchedCourse.course_image_url,
                 })
@@ -222,36 +218,24 @@ function EditCourse() {
                         error={formErrors.course_type}
                     />
                     <DateTimePicker 
-                        label="Pick date and time" 
-                        placeholder="Pick date and time" 
+                        label="Course Start Date" 
+                        placeholder="Enter course start date"
                         valueFormat='YYYY-MM-DD HH:mm:ss'
-                        value={new Date(formData.course_date)}
-                        onChange={(date) => setFormData({ ...formData, course_date: date.toISOString() })}
+                        value={new Date(formData.course_start_date)}
+                        onChange={(date) => setFormData({ ...formData, course_start_date: date.toISOString() })}
                         style={{ marginBottom: rem(1) }}
                         required
-                        error={formErrors.course_date}
+                        error={formErrors.course_start_date}
                     />
-                    <TimeInput
-                        label="Start Time"
-                        placeholder="Enter start time"
-                        rightSection={pickerControl}
-                        ref={ref}
-                        value={formData.course_start_time}
+                    <DateTimePicker
+                        label="Course End Date"
+                        placeholder="Enter course end date"
+                        valueFormat='YYYY-MM-DD HH:mm:ss'
+                        value={new Date(formData.course_end_date)}
+                        onChange={(date) => setFormData({ ...formData, course_end_date: date.toISOString() })}
                         style={{ marginBottom: rem(1) }}
-                        onChange={(time) => setFormData({ ...formData, course_start_time: time })}
                         required
-                        error={formErrors.course_start_time}
-                    />
-                    <TimeInput
-                        label="End Time"
-                        placeholder="Enter end time"
-                        rightSection={pickerControl}
-                        ref={ref}
-                        value={formData.course_end_time}
-                        style={{ marginBottom: rem(1) }}
-                        onChange={(time) => setFormData({ ...formData, course_end_time: time })}
-                        required
-                        error={formErrors.course_end_time}
+                        error={formErrors.course_end_date}
                     />
                     <NumberInput
                         label="Capacity"
