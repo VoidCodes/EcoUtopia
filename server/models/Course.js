@@ -47,13 +47,27 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(500),
             allowNull: true
         },
+        course_status: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            defaultValue: 'draft'
+        },
+        // Foreign key
+        instructorid: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
 
     }, {
         tableName: 'courses',
     });
 
     Course.associate = (models) => {
-        Course.belongsTo(models.Instructor, { foreignKey: 'instructor_id' });
+        Course.hasMany(models.Orders, { foreignKey: 'course_id', onDelete: 'CASCADE' });
+    };
+
+    Course.associate = (models) => {
+        Course.belongsTo(models.Instructor, { foreignKey: 'instructorid', onDelete: 'CASCADE' });
     };
 
 
