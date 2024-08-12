@@ -46,11 +46,12 @@ app.use('/uploads', express.static('uploads'));
 
 // Routes
 const courseRoute = require('./routes/course');
-const instructorRoute = require('./routes/instructor');
 const userRoute = require('./routes/user');
 const ordersRoute = require('./routes/orders');
 const paymentRoute = require('./routes/payment');
 const postsRoute = require('./routes/post');
+const rewardRoute = require('./routes/reward');
+const redeemrewardRoute = require('./routes/redeemreward');
 
 // Translation logic
 const translateText = async (text, targetLanguage) => {
@@ -98,17 +99,12 @@ app.post('/api/translate', handleTranslation);
 
 app.use("/courses", courseRoute);
 app.use('/user', userRoute);
-app.use('/instructor', instructorRoute);
+app.use('/reward', rewardRoute);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use("/orders", ordersRoute); 
 app.use("/payment", paymentRoute);
 app.use("/posts", postsRoute);
-
-// Schedule the job to run every 15 minutes
-cron.schedule('*/15 * * * *', async () => {
-    console.log('Running the point record status update job...');
-    await updatePointRecordStatus();
-});
+app.use("/redeemreward", redeemrewardRoute);
 
 db.sequelize.sync({ alter: true }).then(async () => {
     await seedAdmin(); // Seed the admin user
